@@ -73,6 +73,17 @@ export const drawHighlight: Variants = {
   },
 };
 
+// Element that snaps into place with a springy pop (great for scattered art).
+export const popIn: Variants = {
+  hidden: { opacity: 0, scale: 0.6, rotate: -8 },
+  show: {
+    opacity: 1,
+    scale: 1,
+    rotate: 0,
+    transition: { type: "spring", stiffness: 240, damping: 16 },
+  },
+};
+
 // Empty wrapper variant so the clip mask propagates "show" to its inner line.
 const maskWrapper: Variants = { hidden: {}, show: {} };
 
