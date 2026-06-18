@@ -11,7 +11,7 @@ interface SectionsProps {
 export default function Sections({ children, style }: SectionsProps) {
   return (
     <div
-      className={classNames("h-screen bg-white py-10 px-12", style?.container)}
+      className={classNames("h-screen bg-white py-10 px-14", style?.container)}
     >
       <Head />
       <div className={style?.children}>{children}</div>
