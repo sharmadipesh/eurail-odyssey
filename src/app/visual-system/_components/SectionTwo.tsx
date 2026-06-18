@@ -61,14 +61,18 @@ function renderLine(line: string) {
     <>
       {prefix && <span dangerouslySetInnerHTML={{ __html: prefix }} />}
       <span className="relative inline-block">
-        <span dangerouslySetInnerHTML={{ __html: word }} />
+        {/* Text sits above the circle so the loop reads as drawn behind it */}
+        <span
+          className="relative z-[1]"
+          dangerouslySetInnerHTML={{ __html: word }}
+        />
         {/* Hand-drawn circle, traced as a stroke from start point around. */}
         <svg
           aria-hidden
           viewBox="0 0 268 79"
           preserveAspectRatio="none"
           fill="none"
-          className="pointer-events-none absolute -bottom-[0.26em] -left-[0.22em] -right-[0.1em] -top-[0.12em] -rotate-2 overflow-visible"
+          className="pointer-events-none absolute z-0 -bottom-[0.26em] -left-[0.22em] -right-[0.1em] -top-[0.12em] -rotate-2 overflow-visible"
         >
           <motion.path
             variants={drawCircle}
