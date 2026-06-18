@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import {
   motion,
   useMotionValue,
@@ -101,6 +102,46 @@ export default function VisualSystemPage() {
             transition={{ duration: 1.4, ease: EASE, delay: 0.15 }}
             className="absolute inset-y-0 left-0 z-[1] w-[70cqw] bg-brand-overlay"
           />
+
+          {/* Back to home — glassy pill that expands to reveal the label */}
+          <motion.div
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, ease: EASE, delay: 0.2 }}
+            className="absolute left-[4cqw] top-[4cqw] z-20"
+          >
+            <Link href="/" aria-label="Back to home">
+              <motion.span
+                initial="rest"
+                animate="rest"
+                whileHover="hover"
+                whileTap={{ scale: 0.95 }}
+                variants={{ rest: {}, hover: {} }}
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                className="flex items-center rounded-full bg-ink/85 p-[1.1cqw] text-white shadow-[0_0.6cqw_1.6cqw_-0.4cqw_rgba(27,32,64,0.55)] ring-1 ring-white/15 backdrop-blur-md"
+              >
+                <motion.svg
+                  variants={{ rest: { x: 0 }, hover: { x: -2 } }}
+                  transition={{ type: "spring", stiffness: 500, damping: 22 }}
+                  className="h-[1.7cqw] w-[1.7cqw] shrink-0"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  aria-hidden
+                >
+                  <path d="M10.78 19.03a.75.75 0 0 1-1.06 0l-6.25-6.25a.75.75 0 0 1 0-1.06l6.25-6.25a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L5.81 11.5h14.44a.75.75 0 0 1 0 1.5H5.81l4.97 4.97a.75.75 0 0 1 0 1.06Z" />
+                </motion.svg>
+                <motion.span
+                  variants={{
+                    rest: { width: 0, opacity: 0 },
+                    hover: { width: "auto", opacity: 1 },
+                  }}
+                  className="overflow-hidden whitespace-nowrap pl-[0.55cqw] pr-[0.4cqw] text-[1.15cqw] font-medium uppercase tracking-[0.14em]"
+                >
+                  Home
+                </motion.span>
+              </motion.span>
+            </Link>
+          </motion.div>
 
           {/* Content */}
           <div className="relative z-10 flex h-full flex-col justify-between px-[6cqw] pt-[9cqw] pb-[4cqw]">
