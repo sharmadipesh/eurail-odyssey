@@ -2,7 +2,13 @@
 
 import { motion } from "framer-motion";
 import Sections from "./Sections";
-import { MaskLine, revealGroup, revealParent, revealUp } from "./reveal";
+import {
+  MaskLine,
+  drawHighlight,
+  revealGroup,
+  revealParent,
+  revealUp,
+} from "./reveal";
 
 const CONTENT = {
   left: [
@@ -18,6 +24,37 @@ const CONTENT = {
 
 // Split a heading block on its <br /> markers into individual lines.
 const toLines = (block: string) => block.split(/<br\s*\/?>/i);
+
+// Render a heading line. If it carries the `id='underline'` marker, that word
+// gets the animated brush underline; everything else stays plain rich text.
+function renderLine(line: string) {
+  const match = line.match(
+    /^(.*?)<span id=['"]underline['"]>(.*?)<\/span>(.*)$/i
+  );
+  if (!match) {
+    return <span dangerouslySetInnerHTML={{ __html: line }} />;
+  }
+  const [, prefix, word, rest] = match;
+  return (
+    <>
+      {prefix && <span dangerouslySetInnerHTML={{ __html: prefix }} />}
+      <span className="relative inline-block">
+        <span dangerouslySetInnerHTML={{ __html: word }} />
+        <motion.span
+          aria-hidden
+          variants={drawHighlight}
+          style={{
+            backgroundImage: "url('/images/underline/section-one.svg')",
+            backgroundSize: "100% 100%",
+            backgroundRepeat: "no-repeat",
+          }}
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-[0.16em]"
+        />
+      </span>
+      {rest && <span dangerouslySetInnerHTML={{ __html: rest }} />}
+    </>
+  );
+}
 
 export default function SectionOne() {
   return (
@@ -40,7 +77,7 @@ export default function SectionOne() {
                 key={`${blockIndex}-${lineIndex}`}
                 className={blockIndex > 0 && lineIndex === 0 ? "mt-[1.4em]" : ""}
               >
-                <span dangerouslySetInnerHTML={{ __html: line }} />
+                {renderLine(line)}
               </MaskLine>
             ))
           )}

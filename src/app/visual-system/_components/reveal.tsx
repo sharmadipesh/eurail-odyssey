@@ -60,6 +60,19 @@ export const drawUnderline: Variants = {
   show: { scaleX: 1, transition: { duration: 0.7, ease: EASE, delay: 0.45 } },
 };
 
+// Brush highlight that wipes in left → right, as if drawn under the word.
+// Clip-based (not scale) so the stroke is revealed, never squished.
+// The underline shares its line's start, so this delay (> the 0.9s line
+// reveal) makes the highlight begin only after the text has finished landing.
+export const drawHighlight: Variants = {
+  hidden: { clipPath: "inset(0 100% 0 0)", opacity: 0 },
+  show: {
+    clipPath: "inset(0 0% 0 0)",
+    opacity: 1,
+    transition: { duration: 0.7, ease: EASE, delay: 0.95 },
+  },
+};
+
 // Empty wrapper variant so the clip mask propagates "show" to its inner line.
 const maskWrapper: Variants = { hidden: {}, show: {} };
 
