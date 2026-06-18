@@ -66,6 +66,8 @@ function Cat() {
           <div className="eye" />
           <div className="eye" />
           <div className="nose" />
+          <div className="mouth" />
+          <div className="tongue" />
         </div>
       </div>
     </article>
@@ -86,7 +88,12 @@ export default function NotFound() {
         aria-hidden
         className="pointer-events-none absolute -bottom-[18vh] -right-[10vw] -z-10 h-[55vh] w-[55vh] rounded-full bg-indigo-bright opacity-20 blur-[140px]"
         animate={{ scale: [1, 1.2, 1], opacity: [0.16, 0.28, 0.16] }}
-        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        transition={{
+          duration: 15,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 2,
+        }}
       />
 
       <motion.div
@@ -132,8 +139,9 @@ export default function NotFound() {
           variants={item}
           className="mt-4 max-w-md font-sans text-base font-normal leading-relaxed text-ink/55 sm:text-lg"
         >
-          This page took a different route — but the cat will happily walk you
-          back to familiar tracks.
+          This page took a different route — but{" "}
+          <span className="font-medium text-ink">Meih Meih</span> will happily
+          give you wings back to familiar tracks.
         </motion.p>
 
         <motion.div
