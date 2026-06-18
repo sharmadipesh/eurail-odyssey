@@ -255,7 +255,7 @@ body {
       background:
         radial-gradient(50% 50% at var(--x1) 47%, #fff 2.75em, #0000 calc(2.75em + 1px)),
         radial-gradient(50% 50% at var(--x2) 65%, #fff 1.25em, #0000 calc(1.25em + 1px)),
-        radial-gradient(circle at 60% 55%, #000 7em, #0000 calc(7em + 1px)),
+        radial-gradient(circle at var(--eye-x, 60%) var(--eye-y, 55%), #000 7em, #0000 calc(7em + 1px)),
         white;
       left: var(--pos);
       translate: -50% -50%;

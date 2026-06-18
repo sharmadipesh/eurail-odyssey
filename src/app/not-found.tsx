@@ -1,7 +1,15 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import Link from "next/link";
-import { motion, type Variants } from "framer-motion";
+import {
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  type MotionStyle,
+  type Variants,
+} from "framer-motion";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -36,8 +44,43 @@ const catPop: Variants = {
 };
 
 function Cat() {
+  const ref = useRef<HTMLElement>(null);
+
+  // Pointer direction (relative to the cat), spring-smoothed.
+  const px = useMotionValue(0);
+  const py = useMotionValue(0);
+  const sx = useSpring(px, { stiffness: 150, damping: 18, mass: 0.4 });
+  const sy = useSpring(py, { stiffness: 150, damping: 18, mass: 0.4 });
+
+  // Pupil position within each eye. Defaults (60%/55%) match the resting art.
+  // The right eye is mirrored (scale -1), so its X tracks in the opposite
+  // direction to land on the same screen-space point.
+  const eyeXLeft = useTransform(sx, [-0.5, 0.5], ["52%", "68%"]);
+  const eyeXRight = useTransform(sx, [-0.5, 0.5], ["68%", "52%"]);
+  const eyeY = useTransform(sy, [-0.5, 0.5], ["49%", "61%"]);
+
+  useEffect(() => {
+    function onMove(e: MouseEvent) {
+      const el = ref.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height / 2;
+      const nx = (e.clientX - cx) / (window.innerWidth / 2);
+      const ny = (e.clientY - cy) / (window.innerHeight / 2);
+      px.set(Math.max(-0.5, Math.min(0.5, nx * 0.5)));
+      py.set(Math.max(-0.5, Math.min(0.5, ny * 0.5)));
+    }
+    window.addEventListener("mousemove", onMove);
+    return () => window.removeEventListener("mousemove", onMove);
+  }, [px, py]);
+
+  const leftEyeStyle = { "--eye-x": eyeXLeft, "--eye-y": eyeY } as MotionStyle;
+  const rightEyeStyle = { "--eye-x": eyeXRight, "--eye-y": eyeY } as MotionStyle;
+
   return (
     <article
+      ref={ref}
       className="cat-art"
       role="img"
       aria-labelledby="catAlt"
@@ -63,8 +106,8 @@ function Cat() {
           <div className="whisker" />
           <div className="whisker" />
           <div className="whisker" />
-          <div className="eye" />
-          <div className="eye" />
+          <motion.div className="eye" style={leftEyeStyle} />
+          <motion.div className="eye" style={rightEyeStyle} />
           <div className="nose" />
           <div className="mouth" />
           <div className="tongue" />
