@@ -84,7 +84,7 @@ function StackCard({ index, total, progress, children }: StackCardProps) {
     progress,
     isBase ? [0, 1] : [enterStart, enterEnd],
     isBase ? ["0%", "0%"] : ["100%", "0%"],
-    { ease: easeFn }
+    { ease: easeFn },
   );
 
   // Burial: each transition that brings a new card on top pushes this one back.
@@ -104,7 +104,7 @@ function StackCard({ index, total, progress, children }: StackCardProps) {
         "absolute inset-0 will-change-transform",
         // Subtle depth: incoming cards cast a soft shadow to the left as they
         // slide over the card below. Wrapper-only — the card UI is unchanged.
-        isBase ? "" : "shadow-[-24px_0_48px_-12px_rgba(0,0,0,0.25)]",
+        // isBase ? "" : "shadow-[-24px_0_48px_-12px_rgba(0,0,0,0.25)]",
       ].join(" ")}
     >
       {children}
