@@ -103,7 +103,7 @@ export default function VisualSystemPage() {
           />
 
           {/* Content */}
-          <div className="relative z-10 flex h-full flex-col justify-between p-[6cqw]">
+          <div className="relative z-10 flex h-full flex-col justify-between px-[6cqw] pt-[9cqw] pb-[4cqw]">
             <motion.div style={{ x: fgX, y: fgY }}>
               {/* Logo */}
               <motion.div
@@ -126,7 +126,7 @@ export default function VisualSystemPage() {
                 variants={headingContainer}
                 initial="hidden"
                 animate="show"
-                className="mt-[2.6cqw] font-sans font-extrabold leading-[0.9] tracking-[-0.04em] text-ink text-[7.24cqw]"
+                className="mt-[2.5cqw] font-sans font-extrabold leading-[0.9] tracking-[-0.04em] text-ink text-[7.24cqw]"
               >
                 {HEADING_LINES.map((line) => (
                   <span
@@ -142,7 +142,7 @@ export default function VisualSystemPage() {
             </motion.div>
 
             {/* Footer */}
-            <div className="flex items-end justify-between text-[1.05cqw] font-medium uppercase tracking-[0.18em]">
+            <div className="flex items-end justify-between text-xs font-medium uppercase tracking-[15%]">
               <motion.span
                 variants={fadeUp}
                 initial="hidden"
@@ -159,7 +159,7 @@ export default function VisualSystemPage() {
                 transition={{ delay: 1.65 }}
                 className="text-white/85"
               >
-                Drafted by Pounomi for Ozlem
+                Drafted by Pounomi
               </motion.span>
             </div>
           </div>

@@ -23,3 +23,210 @@ body {
   color: var(--foreground);
   font-family: var(--font-inter), system-ui, sans-serif;
 }
+
+/* ------------------------------------------------------------------ *
+ * Kawaii cat illustration — used on the 404 page as the "0" in 404.
+ * Pure CSS art + keyframes; framer-motion handles entrance only.
+ * ------------------------------------------------------------------ */
+@keyframes catBlink {
+  0%, 20%, 25%, 100% { aspect-ratio: 1; }
+  22.5% { aspect-ratio: 10; }
+}
+@keyframes catTiltHead {
+  0% { rotate: 0deg; }
+  40% { rotate: -10deg; }
+  75% { rotate: 4deg; }
+  100% { rotate: 0deg; }
+}
+@keyframes catWagTail {
+  0% { rotate: 0deg; }
+  20% { rotate: -6deg; }
+  75% { rotate: 4deg; }
+  100% { rotate: 0deg; }
+}
+@keyframes catTwitch {
+  0%, 87%, 100% { rotate: 0deg; }
+  90%, 94%, 98% { rotate: -2deg; }
+  88%, 92%, 96% { rotate: 2deg; }
+}
+
+.cat-art {
+  --fur: #1b2040;
+  --fur-dark: #11142b;
+  --skin: #ffd400;
+  font-size: 0.6vmin;
+  width: 80em;
+  aspect-ratio: 1;
+  position: relative;
+
+  *, *::before, *::after {
+    position: absolute;
+    box-sizing: border-box;
+  }
+
+  .cat-alt {
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .shadow {
+    width: 80%;
+    height: 5%;
+    background: #0002;
+    border-radius: 50% / 0 0 100% 100%;
+    top: 99%;
+    left: 50%;
+    translate: -50%;
+  }
+
+  .tail {
+    animation: catWagTail 13s infinite;
+    transform-origin: 20% 20%;
+    width: 50%;
+    height: 50%;
+    border-radius: 50%;
+    border: 7em solid #0000;
+    border-top-color: var(--fur-dark);
+    border-left-color: var(--fur-dark);
+    clip-path: polygon(100% 0, 100% 100%, 0 30%, 0 0);
+    top: 75%;
+    left: 52%;
+
+    &::before {
+      content: "";
+      width: 7em;
+      aspect-ratio: 1;
+      background: var(--fur-dark);
+      border-radius: 50%;
+      left: 81%;
+      top: -9%;
+    }
+  }
+
+  .body {
+    left: 50%;
+    translate: -50%;
+    bottom: 0;
+    width: 35%;
+    height: 40%;
+    background:
+      radial-gradient(100% 80% at 50% 0, var(--fur-dark) 50%, #0000 0),
+      var(--fur);
+    border-radius: 100% / 200% 200% 20% 20%;
+
+    .leg {
+      width: 165%;
+      height: 38%;
+      background: var(--fur);
+      bottom: 0;
+      left: 50%;
+      translate: -50%;
+      border-radius: 8em 8em 100% 100% / 10em 10em 16em 16em;
+      scale: 1 -1;
+    }
+
+    .paw {
+      width: 35%;
+      height: 49%;
+      border: 0.75em solid #fff;
+      border-top: 0;
+      border-radius: 0 0 5em 5em;
+      border-bottom: 1em solid #fff;
+      top: 48%;
+      rotate: -10deg;
+      left: 10%;
+      clip-path: polygon(0 20%, 100% 30%, 100% 100%, 0 100%);
+
+      & + & {
+        right: 7%;
+        height: 50%;
+        left: auto;
+        rotate: 13deg;
+        scale: -1 1;
+        clip-path: polygon(0 25%, 100% 15%, 100% 100%, 0 100%);
+      }
+    }
+  }
+
+  .head {
+    width: 80%;
+    aspect-ratio: 1.1;
+    left: 50%;
+    translate: -50%;
+    animation: catTiltHead 13s infinite;
+    transform-origin: 50% 100%;
+
+    .ear {
+      width: 60%;
+      aspect-ratio: 1;
+      border: 4em solid var(--fur);
+      border-radius: 5% 90% 10% 80%;
+      background: var(--skin);
+
+      & + & {
+        scale: -1 1;
+        right: 0;
+        animation: catTwitch 7.2s infinite;
+      }
+    }
+
+    .face {
+      inset: 0;
+      background:
+        linear-gradient(#0003, #0000 50%),
+        var(--fur);
+      border-radius: 100% / 125% 125% 80% 75%;
+    }
+
+    .whisker {
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      border: 2em solid #0000;
+      border-top-color: var(--fur);
+      border-left-color: var(--fur);
+      clip-path: polygon(100% 0, 100% 100%, 0 30%, 0 0);
+
+      &:nth-child(1) { top: 70%; translate: -65%; }
+      &:nth-child(2) { top: 80%; translate: -40%; rotate: -20deg; }
+      &:nth-child(3) { right: 0%; top: 70%; translate: 65%; rotate: 10deg; }
+      &:nth-child(4) { right: 0; top: 80%; translate: 40%; rotate: 24deg; }
+    }
+
+    .nose {
+      width: 10%;
+      height: 7%;
+      background: var(--skin);
+      border-radius: 50%;
+      left: 50%;
+      translate: -50% -50%;
+      top: 78%;
+    }
+
+    .eye {
+      --pos: 25%;
+      --x1: 50%;
+      --x2: 40%;
+      width: 35%;
+      animation: catBlink 5s infinite;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background:
+        radial-gradient(50% 50% at var(--x1) 47%, #fff 2.75em, #0000 calc(2.75em + 1px)),
+        radial-gradient(50% 50% at var(--x2) 65%, #fff 1.25em, #0000 calc(1.25em + 1px)),
+        radial-gradient(circle at 60% 55%, #000 7em, #0000 calc(7em + 1px)),
+        white;
+      left: var(--pos);
+      translate: -50% -50%;
+      top: 63%;
+
+      & + & {
+        --x1: 70%;
+        --x2: 80%;
+        left: calc(100% - var(--pos));
+        scale: -1 1;
+      }
+    }
+  }
+}
