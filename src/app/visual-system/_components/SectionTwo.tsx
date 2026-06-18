@@ -149,7 +149,7 @@ export default function SectionTwo() {
           </motion.div>
           <motion.p
             variants={revealUp}
-            className="absolute whitespace-nowrap font-sans text-base font-normal leading-[1.5] text-[#181C38]"
+            className="absolute whitespace-nowrap font-sans text-base font-normal leading-[1.5] text-ink-dark"
             style={{ top: "11%", left: "31%" }}
           >
             {CONTENT.right.one}
@@ -169,7 +169,7 @@ export default function SectionTwo() {
           </motion.div>
           <motion.p
             variants={revealUp}
-            className="absolute whitespace-nowrap font-sans text-base font-normal leading-[1.5] text-[#181C38]"
+            className="absolute whitespace-nowrap font-sans text-base font-normal leading-[1.5] text-ink-dark"
             style={{ top: "55%", left: "7%" }}
           >
             {CONTENT.right.two}

@@ -18,6 +18,7 @@ const config: Config = {
         // Text colors
         ink: {
           DEFAULT: "#1B2040",
+          dark: "#181C38",
           black: "#050505",
         },
         grey: {
