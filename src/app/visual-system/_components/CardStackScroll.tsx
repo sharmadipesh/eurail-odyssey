@@ -14,9 +14,9 @@ import {
 const EASE = [0.22, 1, 0.36, 1] as const;
 const easeFn = cubicBezier(EASE[0], EASE[1], EASE[2], EASE[3]);
 
-// Per-buried-layer offsets — wrapper-only, never touches the card UI.
+// Per-buried-layer offset — wrapper-only, never touches the card UI.
+// Scale only (centered) so buried cards keep equal margin top and bottom.
 const SCALE_STEP = 0.04; // 1 → 0.96 → 0.92 …
-const Y_STEP = -12; // px lifted per buried layer
 
 interface CardStackScrollProps {
   children: React.ReactNode;
@@ -90,11 +90,10 @@ function StackCard({ index, total, progress, children }: StackCardProps) {
   const scale = useTransform(progress, burial.input, burial.scale, {
     ease: easeFn,
   });
-  const y = useTransform(progress, burial.input, burial.y, { ease: easeFn });
 
   return (
     <motion.div
-      style={{ x, y, scale, zIndex: index }}
+      style={{ x, scale, zIndex: index }}
       className={[
         "absolute inset-0 will-change-transform",
         // Subtle depth: incoming cards cast a soft shadow to the left as they
@@ -115,15 +114,13 @@ function StackCard({ index, total, progress, children }: StackCardProps) {
  */
 function buildBurial(index: number, denom: number, maxDepth: number) {
   if (maxDepth <= 0) {
-    return { input: [0, 1], scale: [1, 1], y: [0, 0] };
+    return { input: [0, 1], scale: [1, 1] };
   }
   const input: number[] = [];
   const scale: number[] = [];
-  const y: number[] = [];
   for (let depth = 0; depth <= maxDepth; depth++) {
     input.push((index + depth) / denom);
     scale.push(1 - SCALE_STEP * depth);
-    y.push(Y_STEP * depth);
   }
-  return { input, scale, y };
+  return { input, scale };
 }
