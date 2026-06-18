@@ -34,7 +34,7 @@ const PIECES = [
     src: "/images/section-2.1.svg",
     w: 152,
     h: 153,
-    pos: { top: "2%", left: "12%" },
+    pos: { top: "1%", left: "12%" },
   },
   {
     src: "/images/section-2.2.svg",
@@ -149,8 +149,8 @@ export default function SectionTwo() {
           </motion.div>
           <motion.p
             variants={revealUp}
-            className="absolute whitespace-nowrap font-sans text-[16px] font-normal leading-[1.5] text-[#181C38]"
-            style={{ top: "13%", left: "30%" }}
+            className="absolute whitespace-nowrap font-sans text-base font-normal leading-[1.5] text-[#181C38]"
+            style={{ top: "11%", left: "31%" }}
           >
             {CONTENT.right.one}
           </motion.p>
@@ -169,8 +169,8 @@ export default function SectionTwo() {
           </motion.div>
           <motion.p
             variants={revealUp}
-            className="absolute whitespace-nowrap font-sans text-[16px] font-normal leading-[1.5] text-[#181C38]"
-            style={{ top: "52%", left: "20%" }}
+            className="absolute whitespace-nowrap font-sans text-base font-normal leading-[1.5] text-[#181C38]"
+            style={{ top: "55%", left: "7%" }}
           >
             {CONTENT.right.two}
           </motion.p>
