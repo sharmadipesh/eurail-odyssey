@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import Sections from "./Sections";
 import {
   MaskLine,
-  drawHighlight,
+  drawCircle,
   popIn,
   revealGroup,
   revealParent,
@@ -16,7 +16,7 @@ import {
 const CONTENT = {
   left: {
     one: "Five baskets.<br />Each holds<br />many pillars.<br />One brand.",
-    two: "Each piece is our<br />brand’s <span id='circle'>jigsaw.</span>",
+    two: "Each piece is our<br />brand<span id='circle'>’s jigsaw.</span>",
     three:
       "Every pillar lives in at least one basket. The baskets are how the deep brand reads when you zoom out. The why beneath the what.",
   },
@@ -30,9 +30,24 @@ const toLines = (block: string) => block.split(/<br\s*\/?>/i);
 
 // Scattered puzzle pieces (positions are % of the right canvas — tweak freely).
 const PIECES = [
-  { src: "/images/section-2.1.svg", w: 152, h: 153, pos: { top: "2%", left: "12%" } },
-  { src: "/images/section-2.2.svg", w: 165, h: 129, pos: { top: "44%", left: "2%" } },
-  { src: "/images/section-2.3.svg", w: 129, h: 166, pos: { top: "36%", right: "2%" } },
+  {
+    src: "/images/section-2.1.svg",
+    w: 152,
+    h: 153,
+    pos: { top: "2%", left: "12%" },
+  },
+  {
+    src: "/images/section-2.2.svg",
+    w: 165,
+    h: 129,
+    pos: { top: "44%", left: "2%" },
+  },
+  {
+    src: "/images/section-2.3.svg",
+    w: 129,
+    h: 166,
+    pos: { top: "36%", right: "2%" },
+  },
 ];
 
 // Render a heading line; the `id='circle'` word gets the animated brush circle.
@@ -47,16 +62,25 @@ function renderLine(line: string) {
       {prefix && <span dangerouslySetInnerHTML={{ __html: prefix }} />}
       <span className="relative inline-block">
         <span dangerouslySetInnerHTML={{ __html: word }} />
-        <motion.span
+        {/* Hand-drawn circle, traced as a stroke from start point around. */}
+        <svg
           aria-hidden
-          variants={drawHighlight}
-          style={{
-            backgroundImage: "url('/images/underline/section-two.svg')",
-            backgroundSize: "100% 100%",
-            backgroundRepeat: "no-repeat",
-          }}
-          className="pointer-events-none absolute -left-[0.22em] -right-[0.22em] -top-[0.16em] -bottom-[0.14em]"
-        />
+          viewBox="0 0 268 79"
+          preserveAspectRatio="none"
+          fill="none"
+          className="pointer-events-none absolute -bottom-[0.26em] -left-[0.22em] -right-[0.1em] -top-[0.12em] -rotate-2 overflow-visible"
+        >
+          <motion.path
+            variants={drawCircle}
+            d="M82 68C40 67 12 55 11 37 10 18 66 8 140 8 212 8 258 18 257 37 256 57 206 69 132 69 95 69 58 67 52 60"
+            stroke="#EFC23C"
+            strokeWidth={5}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+            vectorEffect="non-scaling-stroke"
+          />
+        </svg>
       </span>
       {rest && <span dangerouslySetInnerHTML={{ __html: rest }} />}
     </>
@@ -64,11 +88,14 @@ function renderLine(line: string) {
 }
 
 export default function SectionTwo() {
-  const headingLines = [...toLines(CONTENT.left.one), ...toLines(CONTENT.left.two)];
+  const headingLines = [
+    ...toLines(CONTENT.left.one),
+    ...toLines(CONTENT.left.two),
+  ];
   const blockBreak = toLines(CONTENT.left.one).length; // first line of block two
 
   return (
-    <Sections style={{ children: "flex min-h-[78vh] items-center" }}>
+    <Sections style={{ children: "flex min-h-[85vh] items-center" }}>
       <motion.div
         variants={revealParent}
         initial="hidden"
@@ -85,7 +112,7 @@ export default function SectionTwo() {
             {headingLines.map((line, index) => (
               <MaskLine
                 key={index}
-                className={index === blockBreak ? "mt-[0.7em]" : ""}
+                className={index === blockBreak ? "mt-[36px]" : ""}
               >
                 {renderLine(line)}
               </MaskLine>
@@ -94,19 +121,27 @@ export default function SectionTwo() {
 
           <motion.p
             variants={revealUp}
-            className="mt-[1.6em] max-w-[600px] font-sans text-[20px] font-normal leading-[1.5] text-black"
+            className="mt-[24px] max-w-[600px] font-sans text-[20px] font-normal leading-[1.5] text-black"
             dangerouslySetInnerHTML={{ __html: CONTENT.left.three }}
           />
         </motion.div>
 
         {/* Right — scattered puzzle pieces + labels */}
-        <motion.div variants={revealGroup} className="relative h-[480px] flex-1">
+        <motion.div
+          variants={revealGroup}
+          className="relative h-[480px] flex-1"
+        >
           <motion.div
             variants={popIn}
             className="absolute"
             style={PIECES[0].pos}
           >
-            <Image src={PIECES[0].src} alt="" width={PIECES[0].w} height={PIECES[0].h} />
+            <Image
+              src={PIECES[0].src}
+              alt=""
+              width={PIECES[0].w}
+              height={PIECES[0].h}
+            />
           </motion.div>
           <motion.p
             variants={revealUp}
@@ -121,7 +156,12 @@ export default function SectionTwo() {
             className="absolute"
             style={PIECES[1].pos}
           >
-            <Image src={PIECES[1].src} alt="" width={PIECES[1].w} height={PIECES[1].h} />
+            <Image
+              src={PIECES[1].src}
+              alt=""
+              width={PIECES[1].w}
+              height={PIECES[1].h}
+            />
           </motion.div>
           <motion.p
             variants={revealUp}
@@ -136,7 +176,12 @@ export default function SectionTwo() {
             className="absolute"
             style={PIECES[2].pos}
           >
-            <Image src={PIECES[2].src} alt="" width={PIECES[2].w} height={PIECES[2].h} />
+            <Image
+              src={PIECES[2].src}
+              alt=""
+              width={PIECES[2].w}
+              height={PIECES[2].h}
+            />
           </motion.div>
         </motion.div>
       </motion.div>

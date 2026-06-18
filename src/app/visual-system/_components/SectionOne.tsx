@@ -29,7 +29,7 @@ const toLines = (block: string) => block.split(/<br\s*\/?>/i);
 // gets the animated brush underline; everything else stays plain rich text.
 function renderLine(line: string) {
   const match = line.match(
-    /^(.*?)<span id=['"]underline['"]>(.*?)<\/span>(.*)$/i
+    /^(.*?)<span id=['"]underline['"]>(.*?)<\/span>(.*)$/i,
   );
   if (!match) {
     return <span dangerouslySetInnerHTML={{ __html: line }} />;
@@ -58,7 +58,8 @@ function renderLine(line: string) {
 
 export default function SectionOne() {
   return (
-    <Sections style={{ children: "flex min-h-[78vh] items-center" }}>
+    // min-h-[85vh]
+    <Sections style={{ children: "flex min-h-[85vh] items-center" }}>
       <motion.div
         variants={revealParent}
         initial="hidden"
@@ -75,18 +76,20 @@ export default function SectionOne() {
             toLines(block).map((line, lineIndex) => (
               <MaskLine
                 key={`${blockIndex}-${lineIndex}`}
-                className={blockIndex > 0 && lineIndex === 0 ? "mt-[1.4em]" : ""}
+                className={
+                  blockIndex > 0 && lineIndex === 0 ? "mt-[1.4em]" : ""
+                }
               >
                 {renderLine(line)}
               </MaskLine>
-            ))
+            )),
           )}
         </motion.div>
 
         {/* Right — body copy, blur-rising paragraph by paragraph */}
         <motion.div
           variants={revealGroup}
-          className="min-w-0 max-w-[1080px] flex-1 space-y-8 font-sans text-[20px] font-normal leading-[1.33] text-ink-black"
+          className="min-w-0 max-w-[1080px] flex-1 space-y-8 font-sans text-xl font-normal leading-[1.33] text-ink-black"
         >
           {CONTENT.right.map((paragraph, index) => (
             <motion.p

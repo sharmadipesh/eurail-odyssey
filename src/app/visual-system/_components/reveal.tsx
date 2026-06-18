@@ -73,6 +73,20 @@ export const drawHighlight: Variants = {
   },
 };
 
+// A hand-drawn circle that traces itself — the stroke starts at one point and
+// draws all the way around to the end. Fires after the line's text has landed.
+export const drawCircle: Variants = {
+  hidden: { pathLength: 0, opacity: 0 },
+  show: {
+    pathLength: 1,
+    opacity: 1,
+    transition: {
+      pathLength: { duration: 0.9, ease: EASE, delay: 1 },
+      opacity: { duration: 0.2, delay: 1 },
+    },
+  },
+};
+
 // Element that snaps into place with a springy pop (great for scattered art).
 export const popIn: Variants = {
   hidden: { opacity: 0, scale: 0.6, rotate: -8 },
