@@ -1,12 +1,11 @@
 "use client";
 import React from "react";
-import Head from "./Head";
+import Sections from "./Sections";
 
 export default function SectionOne() {
   return (
-    <div className="h-screen bg-white py-10 px-12">
-      <Head />
-      <div></div>
-    </div>
+    <Sections>
+      <div>HEY SECTION ONE</div>
+    </Sections>
   );
 }
