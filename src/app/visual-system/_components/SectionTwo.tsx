@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment, useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
@@ -28,19 +29,29 @@ const CONTENT = {
 
 const toLines = (block: string) => block.split(/<br\s*\/?>/i);
 
+type Piece = {
+  src: string;
+  w: number;
+  h: number;
+  pos: React.CSSProperties;
+  label?: { text: string; pos: React.CSSProperties };
+};
+
 // Scattered puzzle pieces (positions are % of the right canvas — tweak freely).
-const PIECES = [
+const PIECES: Piece[] = [
   {
     src: "/images/section-2.1.svg",
     w: 152,
     h: 153,
     pos: { top: "1%", left: "12%" },
+    label: { text: CONTENT.right.one, pos: { top: "11%", left: "31%" } },
   },
   {
     src: "/images/section-2.2.svg",
     w: 165,
     h: 129,
     pos: { top: "44%", left: "2%" },
+    label: { text: CONTENT.right.two, pos: { top: "55%", left: "7%" } },
   },
   {
     src: "/images/section-2.3.svg",
@@ -49,6 +60,10 @@ const PIECES = [
     pos: { top: "36%", right: "2%" },
   },
 ];
+
+// Spin timing for the secondary loop.
+const SPIN_HOLD = 900; // how long a piece spins before resetting
+const SPIN_PERIOD = 1400; // ms between hand-offs (spin + brief settle)
 
 // Render a heading line; the `id='circle'` word gets the animated brush circle.
 function renderLine(line: string) {
@@ -98,6 +113,29 @@ export default function SectionTwo() {
   ];
   const blockBreak = toLines(CONTENT.left.one).length; // first line of block two
 
+  // Secondary loop: spin one piece at a time, starting only after the
+  // pop-in viewport animation has finished (flagged via onAnimationComplete).
+  const [isIntroDone, setIsIntroDone] = useState(false);
+  const [activePieceIndex, setActivePieceIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!isIntroDone) return;
+
+    let index = 0;
+    let resetId: ReturnType<typeof setTimeout>;
+
+    const interval = setInterval(() => {
+      setActivePieceIndex(index);
+      resetId = setTimeout(() => setActivePieceIndex(null), SPIN_HOLD);
+      index = (index + 1) % PIECES.length;
+    }, SPIN_PERIOD);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(resetId);
+    };
+  }, [isIntroDone]);
+
   return (
     <Sections style={{ children: "flex min-h-[85vh] items-center" }}>
       <motion.div
@@ -135,58 +173,52 @@ export default function SectionTwo() {
           variants={revealGroup}
           className="relative h-[480px] flex-1"
         >
-          <motion.div
-            variants={popIn}
-            className="absolute"
-            style={PIECES[0].pos}
-          >
-            <Image
-              src={PIECES[0].src}
-              alt=""
-              width={PIECES[0].w}
-              height={PIECES[0].h}
-            />
-          </motion.div>
-          <motion.p
-            variants={revealUp}
-            className="absolute whitespace-nowrap font-sans text-base font-normal leading-[1.5] text-ink-dark"
-            style={{ top: "11%", left: "31%" }}
-          >
-            {CONTENT.right.one}
-          </motion.p>
+          {PIECES.map((piece, index) => {
+            const spinning = isIntroDone && activePieceIndex === index;
+            return (
+              <Fragment key={piece.src}>
+                <motion.div
+                  variants={popIn}
+                  // First completion of the inherited pop-in arms the loop.
+                  onAnimationComplete={() => setIsIntroDone(true)}
+                  // Inherit the pop-in until it finishes, then drive the spin.
+                  animate={
+                    isIntroDone
+                      ? spinning
+                        ? { rotate: [0, 360], scale: [1, 1.08, 1] }
+                        : { scale: 1 }
+                      : undefined
+                  }
+                  transition={
+                    isIntroDone
+                      ? spinning
+                        ? { duration: 0.9, ease: [0.22, 1, 0.36, 1] }
+                        : { duration: 0.25 }
+                      : undefined
+                  }
+                  className="absolute"
+                  style={piece.pos}
+                >
+                  <Image
+                    src={piece.src}
+                    alt=""
+                    width={piece.w}
+                    height={piece.h}
+                  />
+                </motion.div>
 
-          <motion.div
-            variants={popIn}
-            className="absolute"
-            style={PIECES[1].pos}
-          >
-            <Image
-              src={PIECES[1].src}
-              alt=""
-              width={PIECES[1].w}
-              height={PIECES[1].h}
-            />
-          </motion.div>
-          <motion.p
-            variants={revealUp}
-            className="absolute whitespace-nowrap font-sans text-base font-normal leading-[1.5] text-ink-dark"
-            style={{ top: "55%", left: "7%" }}
-          >
-            {CONTENT.right.two}
-          </motion.p>
-
-          <motion.div
-            variants={popIn}
-            className="absolute"
-            style={PIECES[2].pos}
-          >
-            <Image
-              src={PIECES[2].src}
-              alt=""
-              width={PIECES[2].w}
-              height={PIECES[2].h}
-            />
-          </motion.div>
+                {piece.label && (
+                  <motion.p
+                    variants={revealUp}
+                    className="absolute whitespace-nowrap font-sans text-base font-normal leading-[1.5] text-ink-dark"
+                    style={piece.label.pos}
+                  >
+                    {piece.label.text}
+                  </motion.p>
+                )}
+              </Fragment>
+            );
+          })}
         </motion.div>
       </motion.div>
     </Sections>
