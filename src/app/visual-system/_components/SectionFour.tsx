@@ -2,7 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { AnimatePresence, motion, useInView, type Variants } from "framer-motion";
+import {
+  AnimatePresence,
+  motion,
+  useInView,
+  type Variants,
+} from "framer-motion";
 
 import Sections from "./Sections";
 import { EASE } from "./reveal";
@@ -47,6 +52,16 @@ const SHOTS: Shot[] = [
   { src: "/images/moodboard/19.png", w: 216, h: 288 },
 ];
 
+// Fisher–Yates — re-arranges the moodboard so it lands differently each load.
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 // Sequence timing (ms): left reveal → wordmark → grid.
 const T_WORDMARK = 1500;
 const T_GRID = 3100;
@@ -69,13 +84,21 @@ const gridContainer: Variants = {
 };
 const gridItem: Variants = {
   hidden: { opacity: 0, scale: 0.85, y: 14 },
-  show: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.5, ease: EASE } },
+  show: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: EASE },
+  },
 };
 
 export default function SectionFour() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.2 });
   const [phase, setPhase] = useState<"intro" | "wordmark" | "grid">("intro");
+  // Shuffle the moodboard on mount so it lands in a fresh arrangement each load.
+  const [shots, setShots] = useState<Shot[]>(SHOTS);
+  useEffect(() => setShots(shuffle(SHOTS)), []);
 
   useEffect(() => {
     if (!inView) return;
@@ -88,7 +111,7 @@ export default function SectionFour() {
   }, [inView]);
 
   return (
-    <Sections style={{ children: "flex min-h-[80vh] items-center" }}>
+    <Sections style={{ children: "flex min-h-[85vh] items-center" }}>
       <div
         ref={ref}
         className="flex w-full flex-col gap-12 lg:flex-row lg:items-center lg:gap-[clamp(32px,4vw,72px)]"
@@ -98,15 +121,15 @@ export default function SectionFour() {
           variants={leftContainer}
           initial="hidden"
           animate={inView ? "show" : "hidden"}
-          className="w-full shrink-0 space-y-6 lg:w-[42%]"
+          className="w-full shrink-0 space-y-[32px] lg:w-[46%]"
         >
           {CONTENT.map((row) => (
             <motion.div
               key={row.id}
               variants={rowVar}
-              className="flex items-center gap-4 font-sans text-[18px] uppercase leading-none tracking-[-0.015em] text-black"
+              className="flex items-center gap-4 whitespace-nowrap font-mono text-[18px] font-normal uppercase leading-none tracking-[0.15em] text-black"
             >
-              <span className="flex w-[210px] shrink-0 items-center gap-3">
+              <span className="flex w-[290px] shrink-0 items-center gap-3">
                 <span>{row.name}</span>
                 <motion.span
                   variants={lineVar}
@@ -130,10 +153,8 @@ export default function SectionFour() {
                 transition={{ duration: 0.85, ease: EASE }}
                 className="absolute inset-0 flex items-center justify-center"
               >
-                <h2 className="text-center font-sans text-[clamp(48px,8vw,104px)] font-extrabold uppercase leading-[0.92] tracking-[-0.04em] text-ink">
-                  Mood
-                  <br />
-                  Board
+                <h2 className="text-center font-sans text-[clamp(32px,6vw,72px)] font-extrabold uppercase leading-[0.92] tracking-[-0.04em] text-ink">
+                  MoodBoard
                 </h2>
               </motion.div>
             )}
@@ -154,13 +175,15 @@ export default function SectionFour() {
                   variants={gridContainer}
                   initial="hidden"
                   animate="show"
-                  className="columns-3 gap-2 lg:columns-4 xl:columns-5 [&>*]:mb-2"
+                  className="group/grid columns-3 gap-2 lg:columns-4 xl:columns-5 [&>*]:mb-2"
                 >
-                  {SHOTS.map((shot) => (
+                  {shots.map((shot, i) => (
                     <motion.div
                       key={shot.src}
                       variants={gridItem}
-                      className="overflow-hidden rounded-md break-inside-avoid"
+                      whileHover={{ y: -8, scale: 1.035 }}
+                      transition={{ type: "spring", stiffness: 260, damping: 22 }}
+                      className="group relative block break-inside-avoid overflow-hidden rounded-md shadow-sm ring-1 ring-black/5 transition-[filter,box-shadow] duration-500 hover:z-10 hover:shadow-[0_18px_44px_-14px_rgba(27,32,64,0.5)] group-hover/grid:brightness-[0.62] group-hover/grid:grayscale-[0.35] hover:!brightness-100 hover:!grayscale-0"
                     >
                       <Image
                         src={shot.src}
@@ -168,8 +191,28 @@ export default function SectionFour() {
                         width={shot.w}
                         height={shot.h}
                         sizes="(max-width: 1024px) 33vw, 18vw"
-                        className="h-auto w-full"
+                        className="h-auto w-full transition-transform duration-[900ms] ease-out group-hover:scale-[1.12]"
                       />
+                      {/* gradient + label fade in on hover */}
+                      <div
+                        aria-hidden
+                        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/65 via-ink/0 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                      />
+                      <span
+                        aria-hidden
+                        className="pointer-events-none absolute bottom-2.5 left-3 flex translate-y-2 items-center gap-1 font-mono text-[10px] uppercase tracking-[0.2em] text-white/95 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100"
+                      >
+                        {String(i + 1).padStart(2, "0")}
+                        <svg className="h-2.5 w-2.5" viewBox="0 0 12 12" fill="none" aria-hidden>
+                          <path
+                            d="M3 9 9 3M4 3h5v5"
+                            stroke="currentColor"
+                            strokeWidth="1.4"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </span>
                     </motion.div>
                   ))}
                 </motion.div>
