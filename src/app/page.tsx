@@ -761,9 +761,9 @@ export default function Home() {
 
         <motion.h1
           variants={heroItem}
-          className="bg-gradient-to-br from-ink to-indigo-bright bg-clip-text pb-[0.12em] font-sans text-[clamp(48px,8.5vw,108px)] font-semibold leading-[1.05] tracking-[-0.035em] text-transparent"
+          className="bg-gradient-to-br from-ink to-indigo-bright bg-clip-text pb-[0.12em] font-sans text-[clamp(42px,7.2vw,92px)] font-semibold leading-[1.05] tracking-[-0.035em] text-transparent"
         >
-          Eurail Odyssey
+          Interrail Odyssey
         </motion.h1>
 
         <motion.p
