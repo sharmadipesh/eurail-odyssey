@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
 
 import Chip from "./Chip";
@@ -56,12 +57,14 @@ export default function Head() {
       className="flex items-center gap-10"
     >
       <motion.div variants={logoReveal}>
-        <Image
-          width={100}
-          height={24}
-          alt="eurail-logo"
-          src="/images/eu-rail-blue.svg"
-        />
+        <Link href="/" aria-label="Back to home">
+          <Image
+            width={100}
+            height={24}
+            alt="eurail-logo"
+            src="/images/eu-rail-blue.svg"
+          />
+        </Link>
       </motion.div>
 
       <motion.div variants={chipGroup} className="flex items-center gap-3">
