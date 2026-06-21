@@ -114,7 +114,7 @@ function VideoThumb({ src }: { src: string }) {
   return (
     <motion.div
       variants={item}
-      className="group relative aspect-[16/9] w-full cursor-pointer overflow-hidden rounded-xl ring-1 ring-[#1B2040]/[0.06] lg:aspect-auto lg:min-h-0 lg:flex-1"
+      className="group relative aspect-[16/9] w-full cursor-pointer overflow-hidden rounded-xl ring-1 ring-[#1B2040]/[0.06]"
     >
       <Image
         src={src}
@@ -147,7 +147,7 @@ export default function SectionTen() {
     <Sections
       style={{
         container: "px-8!",
-        children: "flex min-h-[85vh] items-start pt-[clamp(44px,6vh,84px)]",
+        children: "flex min-h-[90vh] items-start pt-[clamp(60px,8vh,108px)]",
       }}
     >
       <motion.div
@@ -155,12 +155,12 @@ export default function SectionTen() {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, amount: 0.15 }}
-        className="grid w-full grid-cols-1 gap-6 lg:grid-cols-[clamp(300px,28%,400px)_1fr] lg:items-stretch lg:gap-[clamp(40px,5vw,76px)]"
+        className="grid w-full grid-cols-1 gap-6 lg:grid-cols-[clamp(260px,25%,360px)_1fr] lg:items-stretch lg:gap-[clamp(40px,5vw,76px)]"
       >
         {/* Left — stacked video thumbnails (fill the card section's height) */}
         <motion.div
           variants={group}
-          className="flex flex-col gap-[14px] lg:h-full"
+          className="flex flex-col gap-[14px] lg:h-full lg:justify-center"
         >
           {VIDEOS.map((n) => (
             <VideoThumb key={n} src={`/images/video/section-10/${n}.png`} />
