@@ -12,6 +12,9 @@ import SectionSeven from "./_components/SectionSeven";
 import SectionEight from "./_components/SectionEight";
 import SectionNine from "./_components/SectionNine";
 import SectionTen from "./_components/SectionTen";
+import Section12 from "./_components/Section12";
+import Section14 from "./_components/Section14";
+import Section16 from "./_components/Section16";
 import CardStackScroll from "./_components/CardStackScroll";
 
 export default function VisualSystemPage() {
@@ -29,6 +32,9 @@ export default function VisualSystemPage() {
         <SectionEight />
         <SectionNine />
         <SectionTen />
+        <Section12 />
+        <Section14 />
+        <Section16 />
       </CardStackScroll>
     </>
   );

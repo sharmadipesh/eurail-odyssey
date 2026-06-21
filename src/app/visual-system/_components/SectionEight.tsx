@@ -121,7 +121,7 @@ function VideoThumb({ src }: { src: string }) {
   return (
     <motion.div
       variants={item}
-      className="group relative aspect-[16/9] w-full cursor-pointer overflow-hidden rounded-xl ring-1 ring-[#1B2040]/[0.06]"
+      className="group relative aspect-[16/9] w-full cursor-pointer overflow-hidden rounded-xl ring-1 ring-[#1B2040]/[0.06] lg:aspect-auto lg:min-h-0 lg:flex-1"
     >
       <Image
         src={src}
@@ -167,7 +167,7 @@ export default function SectionEight() {
         {/* Left — stacked video thumbnails (fill the card section's height) */}
         <motion.div
           variants={group}
-          className="flex flex-col gap-[14px] lg:h-full lg:justify-center"
+          className="flex flex-col gap-[14px] lg:h-full"
         >
           {VIDEOS.map((n) => (
             <VideoThumb key={n} src={`/images/video/section-8/${n}.png`} />

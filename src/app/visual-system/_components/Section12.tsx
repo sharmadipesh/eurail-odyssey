@@ -12,34 +12,33 @@ type Block = {
   bullets?: string[];
 };
 
-const THE_TRAIN: Block = {
-  heading: ["THE TRAIN"],
-  desc: "The brand's literal protagonist. The train, carriages, the conductor, the corridor, the rolling stock that makes everything else possible.",
+const CITY_CHAPTER: Block = {
+  heading: ["CITY CHAPTER"],
+  desc: "Each European city written as a chapter, not a checklist. The lived layer of famous cities for the 24-34 US traveller, captured by creators who know where to look. Built to power the Find My Trip carousel — every city in the route gets its own slide, its own register, its own atmosphere.",
 };
 const IN_FRAME: Block = {
   heading: ["IN THE FRAME"],
   bullets: [
-    "The articulated bend between two carriages on a long-distance train.",
-    "The long shots of train outdoors and on the platform entering + leaving.",
-    "The corridor's curving line vanishing into the next car.",
-    "Couplings, rivets, the engineering up close. The driver's cabin lit at dawn.",
-    "Vintage upholstery on a 70s carriage still in service in Portugal.",
+    "The neighbourhood that doesn't appear in any top-10.",
+    "The bakery a local queues at on a Tuesday morning.",
+    "The aperitivo bar locals choose over the tourist version.",
+    "The food in the hand, not on the plate.",
+    "Public transit interiors at rush hour and at midnight.",
+    'The corner the city locals call "ours."',
+    "The unbothered local going about a Wednesday.",
   ],
 };
 const TREATMENT: Block = {
   heading: ["TREATMENT"],
-  desc: "Documentary plus design appreciation. Trains shot like architecture — composed, considered, respectful of the engineering. Close-up textures (handles, rivets, upholstery) interspersed with wide compositions. Different European liveries kept honest, not graded into one look.",
+  desc: "Documentary-first, eye-level, no drones. Real opening hours, real light, real bodies. Each city has its own register — Rome is warm and crowded, Berlin is cool and spacious, Lisbon is golden and tilted, Zurich is precise and lakeside. The treatment shifts city to city; the principle (lived, not performed) stays constant.",
 };
 const REGISTER: Block = {
   heading: ["REGISTER"],
-  lines: [
-    "Quiet reverence. Engineering as poetry.",
-    "The craft of a 150-year-old industry still moving people.",
-  ],
+  desc: "Curious. Specific. Affectionate without being precious. The voice of someone showing you their actual neighbourhood. Not a guidebook, not a brochure.",
 };
 const AVOID: Block = {
   heading: ["AVOID"],
-  desc: "Stock train shots. The tunnel cliché. Generic rolling stock with no personality. Anything that could be a train from any country.",
+  desc: "Landmarks: Eiffel Tower, Colosseum, Big Ben, Duomo, Brandenburg Gate, all banned. Top-10 listicle aesthetics. Anything you'd see on a tour-bus brochure. The matcha-croissant of every city. Every city has one; find it and walk past.",
 };
 
 const VIDEOS = ["1", "2", "3"];
@@ -142,7 +141,7 @@ function VideoThumb({ src }: { src: string }) {
   );
 }
 
-export default function SectionTen() {
+export default function Section12() {
   return (
     <Sections
       style={{
@@ -163,7 +162,7 @@ export default function SectionTen() {
           className="flex flex-col gap-[14px] lg:h-full"
         >
           {VIDEOS.map((n) => (
-            <VideoThumb key={n} src={`/images/video/section-10/${n}.png`} />
+            <VideoThumb key={n} src={`/images/video/section-12/${n}.png`} />
           ))}
         </motion.div>
 
@@ -173,7 +172,7 @@ export default function SectionTen() {
           className="grid gap-[14px] sm:grid-cols-[repeat(2,minmax(0,360px))] sm:items-stretch"
         >
           <motion.div variants={group} className="flex flex-col gap-[14px] lg:[&>*:last-child]:flex-1">
-            <Card block={THE_TRAIN} />
+            <Card block={CITY_CHAPTER} />
             <Card block={IN_FRAME} />
           </motion.div>
           <motion.div variants={group} className="flex flex-col gap-[14px] lg:[&>*:last-child]:flex-1">
