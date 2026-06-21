@@ -147,7 +147,7 @@ export default function SectionTen() {
     <Sections
       style={{
         container: "px-8!",
-        children: "flex min-h-[90vh] items-start pt-[clamp(60px,8vh,108px)]",
+        children: "flex min-h-[90vh] items-center",
       }}
     >
       <motion.div
@@ -155,7 +155,7 @@ export default function SectionTen() {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, amount: 0.15 }}
-        className="grid w-full grid-cols-1 gap-6 lg:grid-cols-[clamp(260px,25%,360px)_1fr] lg:items-stretch lg:gap-[clamp(40px,5vw,76px)]"
+        className="grid w-full grid-cols-1 gap-6 lg:grid-cols-[clamp(260px,25%,360px)_auto] lg:items-stretch lg:justify-center lg:gap-[clamp(48px,5vw,80px)]"
       >
         {/* Left — stacked video thumbnails (fill the card section's height) */}
         <motion.div
@@ -170,13 +170,13 @@ export default function SectionTen() {
         {/* Right — a grid of separate cards, one per topic */}
         <motion.div
           variants={group}
-          className="grid gap-[14px] sm:grid-cols-[repeat(2,minmax(0,360px))] sm:items-start lg:justify-self-center"
+          className="grid gap-[14px] sm:grid-cols-[repeat(2,minmax(0,360px))] sm:items-stretch"
         >
-          <motion.div variants={group} className="flex flex-col gap-[14px]">
+          <motion.div variants={group} className="flex flex-col gap-[14px] lg:[&>*:last-child]:flex-1">
             <Card block={THE_TRAIN} />
             <Card block={IN_FRAME} />
           </motion.div>
-          <motion.div variants={group} className="flex flex-col gap-[14px]">
+          <motion.div variants={group} className="flex flex-col gap-[14px] lg:[&>*:last-child]:flex-1">
             <Card block={TREATMENT} />
             <Card block={REGISTER} />
             <Card block={AVOID} />
