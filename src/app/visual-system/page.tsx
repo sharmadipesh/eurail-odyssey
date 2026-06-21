@@ -8,6 +8,8 @@ import SectionThree from "./_components/SectionThree";
 import SectionFour from "./_components/SectionFour";
 import SectionFive from "./_components/SectionFive";
 import SectionSix from "./_components/SectionSix";
+import SectionEight from "./_components/SectionEight";
+import SectionTen from "./_components/SectionTen";
 import CardStackScroll from "./_components/CardStackScroll";
 
 export default function VisualSystemPage() {
@@ -21,6 +23,8 @@ export default function VisualSystemPage() {
         <SectionFour />
         <SectionFive />
         <SectionSix />
+        <SectionEight />
+        <SectionTen />
       </CardStackScroll>
     </>
   );
