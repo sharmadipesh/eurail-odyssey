@@ -10,6 +10,7 @@ import SectionFive from "./_components/SectionFive";
 import SectionSix from "./_components/SectionSix";
 import SectionSeven from "./_components/SectionSeven";
 import SectionEight from "./_components/SectionEight";
+import SectionNine from "./_components/SectionNine";
 import SectionTen from "./_components/SectionTen";
 import CardStackScroll from "./_components/CardStackScroll";
 
@@ -26,6 +27,7 @@ export default function VisualSystemPage() {
         <SectionSix />
         <SectionSeven />
         <SectionEight />
+        <SectionNine />
         <SectionTen />
       </CardStackScroll>
     </>
