@@ -13,7 +13,7 @@ import Sections from "./Sections";
 import { EASE } from "./reveal";
 
 type Row = { id: string; name: string; desc: string };
-type Shot = { src: string; w: number; h: number };
+type Shot = { src: string; w: number; h: number; video?: boolean };
 
 const CONTENT: Row[] = [
   { id: "1", name: "THE TRIP", desc: "THE WINDOW" },
@@ -29,28 +29,44 @@ const CONTENT: Row[] = [
   { id: "11", name: "HERITAGE", desc: "THE ORIGIN" },
 ];
 
-// Real pixel dimensions so next/image keeps each shot's natural aspect ratio.
-const SHOTS: Shot[] = [
-  { src: "/images/moodboard/1.png", w: 400, h: 266 },
-  { src: "/images/moodboard/2.png", w: 150, h: 268 },
-  { src: "/images/moodboard/3.png", w: 358, h: 268 },
-  { src: "/images/moodboard/4.png", w: 306, h: 384 },
-  { src: "/images/moodboard/5.png", w: 452, h: 254 },
-  { src: "/images/moodboard/6.png", w: 340, h: 254 },
-  { src: "/images/moodboard/7.png", w: 338, h: 254 },
-  { src: "/images/moodboard/8.png", w: 322, h: 182 },
-  { src: "/images/moodboard/9.png", w: 324, h: 182 },
-  { src: "/images/moodboard/10.png", w: 282, h: 378 },
-  { src: "/images/moodboard/11.png", w: 504, h: 378 },
-  { src: "/images/moodboard/12.png", w: 384, h: 288 },
-  { src: "/images/moodboard/13.png", w: 382, h: 288 },
-  { src: "/images/moodboard/14.png", w: 114, h: 288 },
-  { src: "/images/moodboard/15.png", w: 228, h: 288 },
-  { src: "/images/moodboard/16.png", w: 230, h: 290 },
-  { src: "/images/moodboard/17.png", w: 224, h: 290 },
-  { src: "/images/moodboard/18.png", w: 200, h: 268 },
-  { src: "/images/moodboard/19.png", w: 216, h: 288 },
+// Public R2 bucket base for the moodboard shots.
+const MOODBOARD_BASE = "https://pub-15da519210e34e4684d96a0ee4f478a3.r2.dev/moodboard";
+
+// These numbers are .mp4 clips rather than .png stills.
+const VIDEO_IDS = new Set([2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13]);
+
+// Real pixel dimensions so each shot keeps its natural aspect ratio.
+const RAW: { n: number; w: number; h: number }[] = [
+  { n: 1, w: 400, h: 266 },
+  { n: 2, w: 150, h: 268 },
+  { n: 3, w: 358, h: 268 },
+  { n: 4, w: 306, h: 384 },
+  { n: 5, w: 452, h: 254 },
+  { n: 6, w: 340, h: 254 },
+  { n: 7, w: 338, h: 254 },
+  { n: 8, w: 322, h: 182 },
+  { n: 9, w: 324, h: 182 },
+  { n: 10, w: 282, h: 378 },
+  { n: 11, w: 504, h: 378 },
+  { n: 12, w: 384, h: 288 },
+  { n: 13, w: 382, h: 288 },
+  { n: 14, w: 114, h: 288 },
+  { n: 15, w: 228, h: 288 },
+  { n: 16, w: 230, h: 290 },
+  { n: 17, w: 224, h: 290 },
+  { n: 18, w: 200, h: 268 },
+  { n: 19, w: 216, h: 288 },
 ];
+
+const SHOTS: Shot[] = RAW.map(({ n, w, h }) => {
+  const video = VIDEO_IDS.has(n);
+  return {
+    src: `${MOODBOARD_BASE}/${n}.${video ? "mp4" : "png"}`,
+    w,
+    h,
+    video,
+  };
+});
 
 // Fisher–Yates — re-arranges the moodboard so it lands differently each load.
 function shuffle<T>(arr: T[]): T[] {
@@ -91,6 +107,158 @@ const gridItem: Variants = {
     transition: { duration: 0.5, ease: EASE },
   },
 };
+
+function Tile({ shot, index }: { shot: Shot; index: number }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // React doesn't reliably set the `muted` DOM property from the JSX attribute,
+  // so pin it via the ref. Muted-by-default lets the hover preview autoplay.
+  useEffect(() => {
+    if (videoRef.current) videoRef.current.muted = true;
+  }, []);
+
+  // The very first frame is often black or motion-blurred and reads as a blurry
+  // photo rather than a video — seek a little in for a clean resting poster.
+  const posterTime = (v: HTMLVideoElement) =>
+    Math.min(0.8, (Number.isFinite(v.duration) ? v.duration : 2) / 2);
+  const seekToPoster = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    try {
+      v.currentTime = posterTime(v);
+    } catch {}
+  };
+
+  // Hover = silent preview (autoplay policy allows muted playback).
+  const previewOnEnter = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = true;
+    void v.play().catch(() => {});
+  };
+  const resetOnLeave = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.pause();
+    v.currentTime = posterTime(v);
+    v.muted = true;
+  };
+  // A click is a real user gesture, so we can unmute and play with audio.
+  const enableSound = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = false;
+    v.volume = 1;
+    void v.play().catch(() => {});
+  };
+
+  // The R2 host sends no CORS headers and `download` is ignored cross-origin,
+  // so route the download through our same-origin proxy (forces attachment).
+  const fileName = shot.src.split("/").pop() || "moodboard.mp4";
+  const downloadHref = `/api/moodboard-download?file=${encodeURIComponent(fileName)}`;
+
+  return (
+    <motion.div
+      variants={gridItem}
+      // Pure upward translate (no scale) so the bottom edge clearly rises and
+      // leaves a real gap — a layered, downward-cast shadow sells the lift.
+      whileHover={{ y: -24 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      onMouseEnter={shot.video ? previewOnEnter : undefined}
+      onMouseLeave={shot.video ? resetOnLeave : undefined}
+      className="group relative block break-inside-avoid overflow-hidden rounded-lg shadow-sm ring-1 ring-black/5 transition-[box-shadow,filter] duration-[550ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:z-10 hover:shadow-[0_30px_55px_-12px_rgba(20,24,48,0.55),0_14px_26px_-10px_rgba(20,24,48,0.4)] group-hover/grid:brightness-[0.58] group-hover/grid:grayscale-[0.4] hover:!brightness-100 hover:!grayscale-0"
+    >
+      {shot.video ? (
+        <video
+          ref={videoRef}
+          src={`${shot.src}#t=0.8`}
+          width={shot.w}
+          height={shot.h}
+          loop
+          playsInline
+          preload="metadata"
+          onLoadedMetadata={seekToPoster}
+          onClick={enableSound}
+          style={{ aspectRatio: `${shot.w} / ${shot.h}` }}
+          className="h-auto w-full cursor-pointer object-cover"
+        />
+      ) : (
+        <Image
+          src={shot.src}
+          alt=""
+          width={shot.w}
+          height={shot.h}
+          sizes="(max-width: 1024px) 33vw, 18vw"
+          className="h-auto w-full"
+        />
+      )}
+
+      {/* play badge — only in the resting state; fades out as the card lifts */}
+      {shot.video && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center opacity-100 transition-opacity duration-300 ease-out group-hover:opacity-0"
+        >
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-black/25 shadow-[0_8px_28px_-6px_rgba(0,0,0,0.6)] ring-1 ring-inset ring-white/45 backdrop-blur-md transition-transform duration-[550ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-90">
+            <svg
+              viewBox="0 0 24 24"
+              className="h-[18px] w-[18px] translate-x-[1.5px] fill-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]"
+              aria-hidden
+            >
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </span>
+        </span>
+      )}
+
+      {/* download button — videos only, fades in on hover, pops on its own hover */}
+      {shot.video && (
+        <motion.a
+          href={downloadHref}
+          download={fileName}
+          onClick={(e) => e.stopPropagation()}
+          aria-label="Download video"
+          initial={false}
+          whileHover={{ scale: 1.28 }}
+          whileTap={{ scale: 0.88 }}
+          transition={{ type: "spring", stiffness: 420, damping: 18, mass: 0.7 }}
+          className="absolute right-2 top-2 z-20 flex h-7 w-7 items-center justify-center rounded-full bg-black/55 text-white opacity-0 shadow-[0_6px_18px_-4px_rgba(0,0,0,0.55)] ring-1 ring-white/25 backdrop-blur-md transition-[opacity,background-color] duration-300 ease-out hover:bg-black/90 group-hover:opacity-100"
+        >
+          <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" aria-hidden>
+            <path
+              d="M8 2.5v7m0 0 2.75-2.75M8 9.5 5.25 6.75M3 12.5h10"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </motion.a>
+      )}
+
+      {/* gradient + label fade in on hover */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/65 via-ink/0 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute bottom-2.5 left-3 flex translate-y-2 items-center gap-1 font-mono text-[10px] uppercase tracking-[0.2em] text-white/95 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100"
+      >
+        {String(index + 1).padStart(2, "0")}
+        <svg className="h-2.5 w-2.5" viewBox="0 0 12 12" fill="none" aria-hidden>
+          <path
+            d="M3 9 9 3M4 3h5v5"
+            stroke="currentColor"
+            strokeWidth="1.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </span>
+    </motion.div>
+  );
+}
 
 export default function SectionFour() {
   const ref = useRef<HTMLDivElement>(null);
@@ -178,42 +346,7 @@ export default function SectionFour() {
                   className="group/grid columns-3 gap-2 lg:columns-4 xl:columns-5 [&>*]:mb-2"
                 >
                   {shots.map((shot, i) => (
-                    <motion.div
-                      key={shot.src}
-                      variants={gridItem}
-                      whileHover={{ y: -8, scale: 1.035 }}
-                      transition={{ type: "spring", stiffness: 260, damping: 22 }}
-                      className="group relative block break-inside-avoid overflow-hidden rounded-md shadow-sm ring-1 ring-black/5 transition-[filter,box-shadow] duration-500 hover:z-10 hover:shadow-[0_18px_44px_-14px_rgba(27,32,64,0.5)] group-hover/grid:brightness-[0.62] group-hover/grid:grayscale-[0.35] hover:!brightness-100 hover:!grayscale-0"
-                    >
-                      <Image
-                        src={shot.src}
-                        alt=""
-                        width={shot.w}
-                        height={shot.h}
-                        sizes="(max-width: 1024px) 33vw, 18vw"
-                        className="h-auto w-full transition-transform duration-[900ms] ease-out group-hover:scale-[1.12]"
-                      />
-                      {/* gradient + label fade in on hover */}
-                      <div
-                        aria-hidden
-                        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/65 via-ink/0 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-                      />
-                      <span
-                        aria-hidden
-                        className="pointer-events-none absolute bottom-2.5 left-3 flex translate-y-2 items-center gap-1 font-mono text-[10px] uppercase tracking-[0.2em] text-white/95 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100"
-                      >
-                        {String(i + 1).padStart(2, "0")}
-                        <svg className="h-2.5 w-2.5" viewBox="0 0 12 12" fill="none" aria-hidden>
-                          <path
-                            d="M3 9 9 3M4 3h5v5"
-                            stroke="currentColor"
-                            strokeWidth="1.4"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </span>
-                    </motion.div>
+                    <Tile key={shot.src} shot={shot} index={i} />
                   ))}
                 </motion.div>
               </motion.div>
