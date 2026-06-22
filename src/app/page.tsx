@@ -717,20 +717,62 @@ export default function Home() {
   return (
     <main
       onMouseMove={handleMove}
-      className="relative isolate flex min-h-screen w-full flex-1 flex-col items-center justify-center overflow-hidden bg-[#FBFAF7] px-6"
+      className="relative isolate flex min-h-screen w-full flex-1 flex-col items-center justify-center overflow-hidden bg-[linear-gradient(150deg,#FDFCF9_0%,#FAF6EE_44%,#F2F0FA_100%)] px-6"
     >
-      {/* Atmospheric depth — warm gold glows */}
-      <div
+      {/* ---------- Animated ambient backdrop ---------- */}
+      {/* slow-rotating hue mesh — a barely-there shifting wash of colour */}
+      <motion.div
         aria-hidden
-        className="pointer-events-none absolute -left-[12vw] -top-[18vh] -z-10 h-[60vh] w-[60vh] rounded-full bg-brand-yellow opacity-30 blur-[140px]"
+        className="pointer-events-none absolute inset-0 -z-20 m-auto h-[170vh] w-[170vh] rounded-full opacity-[0.07] blur-[40px]"
+        style={{
+          background:
+            "conic-gradient(from 0deg, #FFC94A, #FF9E7D, #C7AAFF, #9AA6FF, #6FD9C7, #FFC94A)",
+        }}
+        animate={{ rotate: 360 }}
+        transition={{ duration: 64, repeat: Infinity, ease: "linear" }}
       />
-      <div
+
+      {/* drifting aurora blobs — warm gold leads, cool accents add depth */}
+      <motion.div
         aria-hidden
-        className="pointer-events-none absolute -bottom-[20vh] -right-[12vw] -z-10 h-[58vh] w-[58vh] rounded-full bg-brand-amber opacity-20 blur-[150px]"
+        className="pointer-events-none absolute -left-[14vw] -top-[16vh] -z-10 h-[64vh] w-[64vh] rounded-full bg-[#FFC94A] blur-[150px]"
+        animate={{ x: [0, 38, 0], y: [0, 26, 0], scale: [1, 1.12, 1], opacity: [0.26, 0.4, 0.26] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
       />
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute -bottom-[22vh] -right-[12vw] -z-10 h-[60vh] w-[60vh] rounded-full bg-[#F0A21E] blur-[160px]"
+        animate={{ x: [0, -32, 0], y: [0, -24, 0], scale: [1, 1.14, 1], opacity: [0.18, 0.3, 0.18] }}
+        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+      />
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute right-[4vw] top-[22vh] -z-10 h-[46vh] w-[46vh] rounded-full bg-[#9AA6FF] blur-[150px]"
+        animate={{ x: [0, -24, 0], y: [0, 22, 0], scale: [1, 1.16, 1], opacity: [0.16, 0.3, 0.16] }}
+        transition={{ duration: 16, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
+      />
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute -left-[4vw] bottom-[2vh] -z-10 h-[42vh] w-[42vh] rounded-full bg-[#FF9E7D] blur-[150px]"
+        animate={{ x: [0, 26, 0], y: [0, -20, 0], scale: [1, 1.12, 1], opacity: [0.1, 0.2, 0.1] }}
+        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 2.2 }}
+      />
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute left-[28vw] -top-[6vh] -z-10 h-[40vh] w-[40vh] rounded-full bg-[#C7AAFF] blur-[150px]"
+        animate={{ x: [0, 20, 0], y: [0, 18, 0], scale: [1, 1.1, 1], opacity: [0.1, 0.22, 0.1] }}
+        transition={{ duration: 19, repeat: Infinity, ease: "easeInOut", delay: 1.1 }}
+      />
+
+      {/* fine grain — kills banding, adds a premium matte finish */}
       <div
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-[8vh] -z-10 h-[40vh] w-[40vh] -translate-x-1/2 rounded-full bg-brand-yellow opacity-[0.1] blur-[150px]"
+        className="pointer-events-none absolute inset-0 -z-10 opacity-[0.3] mix-blend-soft-light"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+          backgroundSize: "160px 160px",
+        }}
       />
 
       {/* The real Eurail network (drifts with the cursor) */}
