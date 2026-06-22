@@ -5,31 +5,37 @@ import { motion, type Variants } from "framer-motion";
 import Sections from "./Sections";
 import { EASE } from "./reveal";
 
-/* Each tile is a still or a short film. The `play` flag overlays a play
- * button on the clips; everything else is a plain photograph. Aspect ratios
- * are taken from the source assets so nothing is cropped or distorted. */
-type Tile = { n: number; ratio: number; play?: boolean };
+/* An explicit 12-col × 6-row mosaic (desktop) that mirrors the design board:
+ * two tall portraits anchor the left, a top band, a staggered middle band,
+ * and a bottom band. `place` carries the desktop grid cell plus the mobile
+ * aspect/span; `play` overlays a play button on the clips. */
+type Tile = { n: number; place: string; play?: boolean };
 
 const TILES: Tile[] = [
-  { n: 1, ratio: 306 / 382 },
-  { n: 2, ratio: 284 / 380, play: true },
-  { n: 3, ratio: 204 / 272, play: true },
-  { n: 4, ratio: 312 / 234 },
-  { n: 5, ratio: 418 / 234 },
-  { n: 6, ratio: 310 / 232, play: true },
-  { n: 7, ratio: 474 / 266, play: true },
-  { n: 8, ratio: 296 / 394 },
-  { n: 9, ratio: 316 / 394 },
-  { n: 10, ratio: 312 / 236, play: true },
-  { n: 11, ratio: 246 / 236, play: true },
-  { n: 12, ratio: 176 / 236 },
-  { n: 13, ratio: 420 / 236 },
-  { n: 14, ratio: 488 / 274, play: true },
-  { n: 15, ratio: 392 / 294, play: true },
-  { n: 16, ratio: 234 / 294 },
-  { n: 17, ratio: 522 / 294, play: true },
-  { n: 18, ratio: 182 / 226 },
-  { n: 19, ratio: 302 / 226, play: true },
+  // left — two tall portraits, each spanning into the middle band (staggered)
+  { n: 1, place: "aspect-[4/5] lg:aspect-auto lg:[grid-column:1/3] lg:[grid-row:1/4]" },
+  { n: 2, place: "aspect-[3/4] lg:aspect-auto lg:[grid-column:3/5] lg:[grid-row:1/4]", play: true },
+  // top band
+  { n: 3, place: "aspect-[3/4] lg:aspect-auto lg:[grid-column:5/6] lg:[grid-row:1/3]", play: true },
+  { n: 4, place: "col-span-2 aspect-[4/3] lg:aspect-auto lg:[grid-column:6/8] lg:[grid-row:1/3]" },
+  { n: 5, place: "col-span-2 aspect-video lg:aspect-auto lg:[grid-column:8/10] lg:[grid-row:1/3]" },
+  { n: 6, place: "aspect-[4/3] lg:aspect-auto lg:[grid-column:10/11] lg:[grid-row:1/3]", play: true },
+  { n: 7, place: "col-span-2 aspect-video lg:aspect-auto lg:[grid-column:11/13] lg:[grid-row:1/3]", play: true },
+  // middle band
+  { n: 10, place: "col-span-2 aspect-[4/3] lg:aspect-auto lg:[grid-column:5/7] lg:[grid-row:3/5]", play: true },
+  { n: 11, place: "aspect-square lg:aspect-auto lg:[grid-column:7/8] lg:[grid-row:3/5]", play: true },
+  { n: 12, place: "aspect-[3/4] lg:aspect-auto lg:[grid-column:8/9] lg:[grid-row:3/5]", play: true },
+  { n: 13, place: "col-span-2 aspect-video lg:aspect-auto lg:[grid-column:9/11] lg:[grid-row:3/5]" },
+  { n: 14, place: "col-span-2 aspect-video lg:aspect-auto lg:[grid-column:11/13] lg:[grid-row:3/5]", play: true },
+  // bottom-left — two portraits under the anchors
+  { n: 8, place: "aspect-[3/4] lg:aspect-auto lg:[grid-column:1/3] lg:[grid-row:4/7]" },
+  { n: 9, place: "aspect-[4/5] lg:aspect-auto lg:[grid-column:3/5] lg:[grid-row:4/7]", play: true },
+  // bottom band
+  { n: 15, place: "col-span-2 aspect-[4/3] lg:aspect-auto lg:[grid-column:5/7] lg:[grid-row:5/7]", play: true },
+  { n: 16, place: "aspect-[4/5] lg:aspect-auto lg:[grid-column:7/8] lg:[grid-row:5/7]" },
+  { n: 17, place: "col-span-2 aspect-video lg:aspect-auto lg:[grid-column:8/10] lg:[grid-row:5/7]", play: true },
+  { n: 18, place: "aspect-[4/5] lg:aspect-auto lg:[grid-column:10/11] lg:[grid-row:5/7]" },
+  { n: 19, place: "col-span-2 aspect-[4/3] lg:aspect-auto lg:[grid-column:11/13] lg:[grid-row:5/7]", play: true },
 ];
 
 const container: Variants = {
@@ -62,8 +68,7 @@ function MosaicTile({ tile }: { tile: Tile }) {
   return (
     <motion.div
       variants={item}
-      className="group relative mb-2.5 block w-full cursor-pointer overflow-hidden rounded-[6px] ring-1 ring-[#1B2040]/[0.06] break-inside-avoid"
-      style={{ aspectRatio: tile.ratio }}
+      className={`group relative cursor-pointer overflow-hidden rounded-[6px] ring-1 ring-[#1B2040]/[0.06] ${tile.place}`}
     >
       <Image
         src={`/images/video/section-15/${tile.n}.png`}
@@ -91,7 +96,7 @@ export default function Section15() {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, amount: 0.12 }}
-        className="mx-auto w-full max-w-[1640px] columns-2 gap-2.5 sm:columns-3 lg:columns-7"
+        className="mx-auto grid w-full max-w-[1640px] grid-cols-2 gap-2.5 sm:grid-cols-4 lg:h-[clamp(440px,64vh,580px)] lg:grid-cols-12 lg:[grid-template-rows:repeat(6,minmax(0,1fr))]"
       >
         {TILES.map((tile) => (
           <MosaicTile key={tile.n} tile={tile} />
