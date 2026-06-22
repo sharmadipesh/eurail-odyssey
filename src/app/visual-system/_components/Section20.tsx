@@ -12,37 +12,32 @@ type Block = {
   bullets?: string[];
 };
 
-const UNGUARDED: Block = {
-  heading: ["THE UNGUARDED"],
-  lines: [
-    "This pillar is about the people of that city going about their actual lives. Oblivious to the camera, unselfconscious, caught in the ordinary. A nonna at a stall. A commuter reading. A child running. The city as populated by real people who didn't sign up to be photographed.",
-    "The traveller's role here is witness. They are the eye behind the camera, not the protagonist.",
-  ],
+const LIGHT: Block = {
+  heading: ["THE LIGHT"],
+  desc: "Pure atmosphere. More about feeling. Golden hour through a carriage, the melancholy of overcast, the neon of a night train. The mood pillar that grades the whole system.",
 };
 const IN_FRAME: Block = {
   heading: ["IN THE FRAME"],
   bullets: [
-    "The threshold moments captured in motion.",
-    "A fishmonger arguing with a regular.",
-    "A grandmother on a balcony.",
-    "A Roman at his forno who knows the order.",
-    "A group of friends at a bar who don't know you're there.",
+    "Sun raking across carriage seats.",
+    "The blue hour on a platform.",
+    "Overcast flatness that feels like a Tuesday.",
+    "Neon and sodium light at a night station.",
+    "Light as the protagonist; people as silhouettes.",
   ],
 };
 const TREATMENT: Block = {
   heading: ["TREATMENT"],
-  desc: "Candid documentary portraiture · the strangers-into-friends arc. Often two people in frame, sometimes one feeling the encounter from the inside. Warm natural light. Faces allowed but not required.",
+  desc: "Embrace 'wrong' exposure. Overexposed flare, underexposed shadow. Heavy atmosphere. Grain. The frame that captures the feeling beats the sharp one that misses it. This pillar sets the colour grade for everything else.",
 };
 const REGISTER: Block = {
   heading: ["REGISTER"],
-  desc: "Quiet, observed, intimate. Warmth. Recognition. The quiet pull of becoming known. Quiet observation. Respectful distance. The feeling of being let into something private.",
+  desc: "The emotional weather of a journey.",
 };
 const AVOID: Block = {
   heading: ["AVOID"],
-  desc: 'Posed. Eye contact with camera. The "kind local" who is performing for you. Any shot that requires their permission to set up.',
+  desc: "Flat, evenly-lit, 'correct' photography. HDR. Anything that looks like a camera test rather than a memory.",
 };
-
-const VIDEOS = ["1", "2", "3"];
 
 const container: Variants = {
   hidden: {},
@@ -110,30 +105,23 @@ function Card({ block }: { block: Block }) {
   );
 }
 
-function VideoThumb({ src }: { src: string }) {
+function VideoThumb() {
   return (
     <motion.div
       variants={item}
-      className="group relative aspect-[16/9] w-full cursor-pointer overflow-hidden rounded-xl ring-1 ring-[#1B2040]/[0.06] lg:aspect-auto lg:min-h-0 lg:flex-1"
+      className="group relative aspect-[9/16] w-full cursor-pointer overflow-hidden rounded-xl ring-1 ring-[#1B2040]/[0.06] lg:aspect-auto lg:h-full lg:min-h-0"
     >
       <Image
-        src={src}
+        src="/images/video/section-20.png"
         alt=""
         fill
         sizes="(max-width: 1024px) 90vw, 290px"
         className="object-cover transition-transform duration-[800ms] ease-out group-hover:scale-[1.06]"
       />
       <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/10" />
-      <div className="absolute inset-0 flex items-center justify-center">
+      <div className="absolute bottom-5 left-5">
         <span className="flex h-11 w-11 items-center justify-center rounded-full bg-black/25 ring-1 ring-white/35 backdrop-blur-[2px] transition-all duration-500 group-hover:scale-110 group-hover:bg-black/40">
-          <svg
-            width="13"
-            height="15"
-            viewBox="0 0 15 17"
-            fill="none"
-            className="ml-[2px]"
-            aria-hidden
-          >
+          <svg width="13" height="15" viewBox="0 0 15 17" fill="none" className="ml-[2px]" aria-hidden>
             <path d="M0 0L15 8.5L0 17V0Z" fill="white" fillOpacity="0.95" />
           </svg>
         </span>
@@ -142,7 +130,7 @@ function VideoThumb({ src }: { src: string }) {
   );
 }
 
-export default function Section16() {
+export default function Section20() {
   return (
     <Sections
       style={{
@@ -157,14 +145,9 @@ export default function Section16() {
         viewport={{ once: true, amount: 0.15 }}
         className="grid w-full grid-cols-1 gap-6 lg:grid-cols-[clamp(260px,25%,360px)_auto] lg:items-stretch lg:justify-center lg:gap-[clamp(48px,5vw,80px)]"
       >
-        {/* Left — stacked video thumbnails (fill the card section's height) */}
-        <motion.div
-          variants={group}
-          className="flex flex-col gap-[14px] lg:h-full"
-        >
-          {VIDEOS.map((n) => (
-            <VideoThumb key={n} src={`/images/video/section-16/${n}.png`} />
-          ))}
+        {/* Left — single tall video thumbnail (fills the card section's height) */}
+        <motion.div variants={group} className="flex flex-col lg:h-full">
+          <VideoThumb />
         </motion.div>
 
         {/* Right — a grid of separate cards, one per topic */}
@@ -172,17 +155,11 @@ export default function Section16() {
           variants={group}
           className="grid gap-[14px] sm:grid-cols-[repeat(2,minmax(0,360px))] sm:items-stretch"
         >
-          <motion.div
-            variants={group}
-            className="flex flex-col gap-[14px] lg:[&>*:last-child]:flex-1"
-          >
-            <Card block={UNGUARDED} />
+          <motion.div variants={group} className="flex flex-col gap-[14px] lg:[&>*:last-child]:flex-1">
+            <Card block={LIGHT} />
             <Card block={IN_FRAME} />
           </motion.div>
-          <motion.div
-            variants={group}
-            className="flex flex-col gap-[14px] lg:[&>*:last-child]:flex-1"
-          >
+          <motion.div variants={group} className="flex flex-col gap-[14px] lg:[&>*:last-child]:flex-1">
             <Card block={TREATMENT} />
             <Card block={REGISTER} />
             <Card block={AVOID} />

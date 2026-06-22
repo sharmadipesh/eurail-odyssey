@@ -12,37 +12,38 @@ type Block = {
   bullets?: string[];
 };
 
-const UNGUARDED: Block = {
-  heading: ["THE UNGUARDED"],
+const ENCOUNTER: Block = {
+  heading: ["THE ENCOUNTER"],
   lines: [
-    "This pillar is about the people of that city going about their actual lives. Oblivious to the camera, unselfconscious, caught in the ordinary. A nonna at a stall. A commuter reading. A child running. The city as populated by real people who didn't sign up to be photographed.",
-    "The traveller's role here is witness. They are the eye behind the camera, not the protagonist.",
+    "The moment travel stops being about a place and starts being a feeling. The threshold between the traveller and the city becoming one.",
+    "The first hello on a platform, the half-laugh in a half-language, the becoming-friends in real time.",
   ],
 };
 const IN_FRAME: Block = {
   heading: ["IN THE FRAME"],
   bullets: [
     "The threshold moments captured in motion.",
-    "A fishmonger arguing with a regular.",
-    "A grandmother on a balcony.",
-    "A Roman at his forno who knows the order.",
-    "A group of friends at a bar who don't know you're there.",
+    "The moment travel stops being about a place and starts being about the travellers + the strangers.",
+    "The half-laugh in a half-language. The becoming-friends in real time.",
+    "A grandmother insisting you finish what's on your plate.",
+    "The table as the social register travel takes you to.",
   ],
 };
 const TREATMENT: Block = {
   heading: ["TREATMENT"],
-  desc: "Candid documentary portraiture · the strangers-into-friends arc. Often two people in frame, sometimes one feeling the encounter from the inside. Warm natural light. Faces allowed but not required.",
+  desc: "Candid documentary portraiture. The strangers-into-friends arc. Often two people in frame, sometimes one feeling the encounter from the inside. Warm natural light. Faces allowed but not required.",
 };
 const REGISTER: Block = {
   heading: ["REGISTER"],
-  desc: "Quiet, observed, intimate. Warmth. Recognition. The quiet pull of becoming known. Quiet observation. Respectful distance. The feeling of being let into something private.",
+  desc: "Quiet, observed, intimate. Warmth. Recognition. The quiet pull of becoming known.",
 };
 const AVOID: Block = {
   heading: ["AVOID"],
-  desc: 'Posed. Eye contact with camera. The "kind local" who is performing for you. Any shot that requires their permission to set up.',
+  desc: "Scripted meet-cutes. The host who 'introduces' you. Re-enactments. Anything that breaks the witness-not-host rule.",
 };
 
-const VIDEOS = ["1", "2", "3"];
+type Vid = { n: string; play?: boolean; grow?: number };
+const VIDEOS: Vid[] = [{ n: "1" }, { n: "2", grow: 2 }, { n: "3", play: true }];
 
 const container: Variants = {
   hidden: {},
@@ -110,39 +111,35 @@ function Card({ block }: { block: Block }) {
   );
 }
 
-function VideoThumb({ src }: { src: string }) {
+function VideoThumb({ vid }: { vid: Vid }) {
   return (
     <motion.div
       variants={item}
-      className="group relative aspect-[16/9] w-full cursor-pointer overflow-hidden rounded-xl ring-1 ring-[#1B2040]/[0.06] lg:aspect-auto lg:min-h-0 lg:flex-1"
+      className="group relative aspect-[16/9] w-full cursor-pointer overflow-hidden rounded-xl ring-1 ring-[#1B2040]/[0.06] lg:aspect-auto lg:min-h-0"
+      style={{ flex: vid.grow ?? 1 }}
     >
       <Image
-        src={src}
+        src={`/images/video/section-18/${vid.n}.png`}
         alt=""
         fill
         sizes="(max-width: 1024px) 90vw, 290px"
         className="object-cover transition-transform duration-[800ms] ease-out group-hover:scale-[1.06]"
       />
       <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/10" />
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span className="flex h-11 w-11 items-center justify-center rounded-full bg-black/25 ring-1 ring-white/35 backdrop-blur-[2px] transition-all duration-500 group-hover:scale-110 group-hover:bg-black/40">
-          <svg
-            width="13"
-            height="15"
-            viewBox="0 0 15 17"
-            fill="none"
-            className="ml-[2px]"
-            aria-hidden
-          >
-            <path d="M0 0L15 8.5L0 17V0Z" fill="white" fillOpacity="0.95" />
-          </svg>
-        </span>
-      </div>
+      {vid.play && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-black/25 ring-1 ring-white/35 backdrop-blur-[2px] transition-all duration-500 group-hover:scale-110 group-hover:bg-black/40">
+            <svg width="13" height="15" viewBox="0 0 15 17" fill="none" className="ml-[2px]" aria-hidden>
+              <path d="M0 0L15 8.5L0 17V0Z" fill="white" fillOpacity="0.95" />
+            </svg>
+          </span>
+        </div>
+      )}
     </motion.div>
   );
 }
 
-export default function Section16() {
+export default function Section18() {
   return (
     <Sections
       style={{
@@ -158,12 +155,9 @@ export default function Section16() {
         className="grid w-full grid-cols-1 gap-6 lg:grid-cols-[clamp(260px,25%,360px)_auto] lg:items-stretch lg:justify-center lg:gap-[clamp(48px,5vw,80px)]"
       >
         {/* Left — stacked video thumbnails (fill the card section's height) */}
-        <motion.div
-          variants={group}
-          className="flex flex-col gap-[14px] lg:h-full"
-        >
-          {VIDEOS.map((n) => (
-            <VideoThumb key={n} src={`/images/video/section-16/${n}.png`} />
+        <motion.div variants={group} className="flex flex-col gap-[14px] lg:h-full">
+          {VIDEOS.map((v) => (
+            <VideoThumb key={v.n} vid={v} />
           ))}
         </motion.div>
 
@@ -172,17 +166,11 @@ export default function Section16() {
           variants={group}
           className="grid gap-[14px] sm:grid-cols-[repeat(2,minmax(0,360px))] sm:items-stretch"
         >
-          <motion.div
-            variants={group}
-            className="flex flex-col gap-[14px] lg:[&>*:last-child]:flex-1"
-          >
-            <Card block={UNGUARDED} />
+          <motion.div variants={group} className="flex flex-col gap-[14px] lg:[&>*:last-child]:flex-1">
+            <Card block={ENCOUNTER} />
             <Card block={IN_FRAME} />
           </motion.div>
-          <motion.div
-            variants={group}
-            className="flex flex-col gap-[14px] lg:[&>*:last-child]:flex-1"
-          >
+          <motion.div variants={group} className="flex flex-col gap-[14px] lg:[&>*:last-child]:flex-1">
             <Card block={TREATMENT} />
             <Card block={REGISTER} />
             <Card block={AVOID} />
