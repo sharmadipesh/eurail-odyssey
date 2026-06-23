@@ -884,8 +884,8 @@ export default function Home() {
           It&apos;s thousands of journeys.
           <br />
           This visual system translates that complexity into{" "}
-          <strong>11 creative</strong>
-          territories that work together as one brand.
+          <strong>11 creative</strong> territories that work together as one
+          brand.
         </motion.p>
 
         <motion.div variants={heroItem} className="pointer-events-auto mt-10">
