@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import { motion, type Variants } from "framer-motion";
 import Sections from "./Sections";
 import { playSingle } from "./playSingle";
@@ -116,7 +116,7 @@ function Card({ block }: { block: Block }) {
   );
 }
 
-function VideoThumb({ vid }: { vid: Vid }) {
+const VideoThumb = memo(function VideoThumb({ vid }: { vid: Vid }) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Pin muted via the ref so the hover preview can autoplay (autoplay policy).
@@ -231,7 +231,7 @@ function VideoThumb({ vid }: { vid: Vid }) {
       </span>
     </motion.div>
   );
-}
+});
 
 export default function Section14() {
   return (

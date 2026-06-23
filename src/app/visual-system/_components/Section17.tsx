@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, type Variants } from "framer-motion";
 import Sections from "./Sections";
@@ -58,7 +58,7 @@ const item: Variants = {
   },
 };
 
-function Clip({ clip }: { clip: Clip }) {
+const Clip = memo(function Clip({ clip }: { clip: Clip }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const isVideo = VIDEO_IDS.has(clip.n);
 
@@ -172,7 +172,7 @@ function Clip({ clip }: { clip: Clip }) {
       )}
     </motion.div>
   );
-}
+});
 
 function Row({ clips }: { clips: Clip[] }) {
   return (

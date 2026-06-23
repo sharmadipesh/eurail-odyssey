@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import Image from "next/image";
 import classNames from "classnames";
 import { motion, type Variants } from "framer-motion";
@@ -79,7 +79,7 @@ const tileVar: Variants = {
   show: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.6, ease: EASE } },
 };
 
-function Tile({ n, a, label }: T) {
+const Tile = memo(function Tile({ n, a, label }: T) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const isVideo = VIDEO_IDS.has(n);
 
@@ -206,7 +206,7 @@ function Tile({ n, a, label }: T) {
       )}
     </motion.div>
   );
-}
+});
 
 function Row({ tiles }: { tiles: T[] }) {
   return (

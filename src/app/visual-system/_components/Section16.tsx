@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, type Variants } from "framer-motion";
 import Sections from "./Sections";
@@ -117,7 +117,7 @@ function Card({ block }: { block: Block }) {
   );
 }
 
-function VideoThumb({ n }: { n: string }) {
+const VideoThumb = memo(function VideoThumb({ n }: { n: string }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const isVideo = VIDEO_IDS.has(Number(n));
 
@@ -233,7 +233,7 @@ function VideoThumb({ n }: { n: string }) {
       )}
     </motion.div>
   );
-}
+});
 
 export default function Section16() {
   return (

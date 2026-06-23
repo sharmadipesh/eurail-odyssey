@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, type Variants } from "framer-motion";
 import Sections from "./Sections";
@@ -59,7 +59,7 @@ const item: Variants = {
   },
 };
 
-function MosaicTile({ tile }: { tile: Tile }) {
+const MosaicTile = memo(function MosaicTile({ tile }: { tile: Tile }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const isVideo = VIDEO_IDS.has(tile.n);
 
@@ -172,7 +172,7 @@ function MosaicTile({ tile }: { tile: Tile }) {
       )}
     </motion.div>
   );
-}
+});
 
 export default function Section15() {
   return (
