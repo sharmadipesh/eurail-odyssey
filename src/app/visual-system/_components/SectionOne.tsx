@@ -12,7 +12,7 @@ import {
 
 const CONTENT = {
   left: [
-    "<span id='underline'>16 ways</span> to feel<br />unmistakly the<br />interrail effect.",
+    "<span id='underline'>11 ways</span> to feel<br />unmistakly the<br />interrail effect.",
     "And nothing like<br />a tourisim board.",
   ],
   right: [

@@ -22,6 +22,8 @@ const DIRS = new Set([
   "section-18",
   "section-19",
   "section-21",
+  "section-23",
+  "section-25",
 ]);
 
 export async function GET(req: NextRequest) {

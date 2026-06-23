@@ -3,10 +3,9 @@
 import { useEffect, useRef } from "react";
 import { motion, type Variants } from "framer-motion";
 import Sections from "./Sections";
-import { playSingle } from "./playSingle";
 import { EASE } from "./reveal";
 
-const TWENTY_BASE = "https://pub-15da519210e34e4684d96a0ee4f478a3.r2.dev";
+const TWENTYTWO_BASE = "https://pub-15da519210e34e4684d96a0ee4f478a3.r2.dev";
 
 type Block = {
   heading: string[];
@@ -15,31 +14,36 @@ type Block = {
   bullets?: string[];
 };
 
-const LIGHT: Block = {
-  heading: ["THE LIGHT"],
-  desc: "Pure atmosphere. More about feeling. Golden hour through a carriage, the melancholy of overcast, the neon of a night train. The mood pillar that grades the whole system.",
+const BELONGING: Block = {
+  heading: ["THE BELONGING"],
+  lines: [
+    "Shot on phones, by the community, as they actually wander. Raw, first-person, spontaneous. Videos & stills.",
+    "Convert reviews and letters into interesting layout formats unique to the brand.",
+  ],
 };
 const IN_FRAME: Block = {
   heading: ["IN THE FRAME"],
   bullets: [
-    "Sun raking across carriage seats.",
-    "The blue hour on a platform.",
-    "Overcast flatness that feels like a Tuesday.",
-    "Neon and sodium light at a night station.",
-    "Light as the protagonist; people as silhouettes.",
+    "One take instead of ten.",
+    "The slightly blurry frame that captures the feeling.",
+    "Handheld, unplanned, alive. Never a clean product shot.",
+    "Real ambient with crowds, laughter, stations.",
+    "Upbeat but never forced.",
+    "Real, lived-in, in-context — on actual bags, walls, jackets. Weathered & personalised.",
+    "Layered community voices.",
   ],
 };
 const TREATMENT: Block = {
   heading: ["TREATMENT"],
-  desc: "Embrace 'wrong' exposure. Overexposed flare, underexposed shadow. Heavy atmosphere. Grain. The frame that captures the feeling beats the sharp one that misses it. This pillar sets the colour grade for everything else.",
+  desc: "Social + activation films 15-60s. Carousels. Collective and celebratory. Gatherings, trinket drops, the certificate moment.",
 };
 const REGISTER: Block = {
   heading: ["REGISTER"],
-  desc: "The emotional weather of a journey.",
+  desc: "Warm, on the go, a little chaotic in the best way. Many people, one shared identity. UGC-heavy.",
 };
 const AVOID: Block = {
   heading: ["AVOID"],
-  desc: "Flat, evenly-lit, 'correct' photography. HDR. Anything that looks like a camera test rather than a memory.",
+  desc: "Forced 'community' that's secretly a cast. Corporate event-recap. Losing the grassroots feel.",
 };
 
 const container: Variants = {
@@ -116,17 +120,12 @@ function VideoThumb() {
     if (videoRef.current) videoRef.current.muted = true;
   }, []);
 
+  // Hover = silent preview; click = unmute + play with audio.
   const previewOnEnter = () => {
     const v = videoRef.current;
     if (!v) return;
-    // Hover = play WITH audio. Browsers block unmuted autoplay until the page
-    // has a user gesture, so fall back to a muted preview if sound is denied.
-    v.muted = false;
-    v.volume = 1;
-    playSingle(v).catch(() => {
-      v.muted = true;
-      void playSingle(v).catch(() => {});
-    });
+    v.muted = true;
+    void v.play().catch(() => {});
   };
   const resetOnLeave = () => {
     const v = videoRef.current;
@@ -140,10 +139,10 @@ function VideoThumb() {
     if (!v) return;
     v.muted = false;
     v.volume = 1;
-    void playSingle(v).catch(() => {});
+    void v.play().catch(() => {});
   };
 
-  const downloadHref = "/api/moodboard-download?file=section-20.mp4";
+  const downloadHref = "/api/moodboard-download?file=section-22.mp4";
 
   return (
     <motion.div
@@ -156,12 +155,12 @@ function VideoThumb() {
     >
       <video
         ref={videoRef}
-        src={`${TWENTY_BASE}/section-20.mp4`}
-        poster={`${TWENTY_BASE}/section-20.png`}
+        src={`${TWENTYTWO_BASE}/section-22.mp4`}
+        poster={`${TWENTYTWO_BASE}/section-22.png`}
         loop
         muted
         playsInline
-        preload="none"
+        preload="metadata"
         onClick={enableSound}
         className="absolute inset-0 h-full w-full object-cover"
       />
@@ -169,7 +168,7 @@ function VideoThumb() {
       {/* download button — fades in on hover, pops on its own hover (matches moodboard) */}
       <motion.a
         href={downloadHref}
-        download="section-20.mp4"
+        download="section-22.mp4"
         onClick={(e) => e.stopPropagation()}
         aria-label="Download video"
         initial={false}
@@ -208,7 +207,7 @@ function VideoThumb() {
   );
 }
 
-export default function Section20() {
+export default function Section22() {
   return (
     <Sections group="art"
       style={{
@@ -234,7 +233,7 @@ export default function Section20() {
           className="grid gap-[14px] sm:grid-cols-[repeat(2,minmax(0,360px))] sm:items-stretch"
         >
           <motion.div variants={group} className="flex flex-col gap-[14px] lg:[&>*:last-child]:flex-1">
-            <Card block={LIGHT} />
+            <Card block={BELONGING} />
             <Card block={IN_FRAME} />
           </motion.div>
           <motion.div variants={group} className="flex flex-col gap-[14px] lg:[&>*:last-child]:flex-1">

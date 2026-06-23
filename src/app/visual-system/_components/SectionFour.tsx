@@ -10,6 +10,8 @@ import {
 } from "framer-motion";
 
 import Sections from "./Sections";
+import { playSingle } from "./playSingle";
+import { loadPoster } from "./posterQueue";
 import { EASE } from "./reveal";
 
 type Row = { id: string; name: string; desc: string };
@@ -129,12 +131,27 @@ function Tile({ shot, index }: { shot: Shot; index: number }) {
     } catch {}
   };
 
-  // Hover = silent preview (autoplay policy allows muted playback).
+  // The grid phase mounts all video tiles at once. Rather than each fetching
+  // metadata + seek-decoding its poster simultaneously (a main-thread spike),
+  // route them through a queue that loads at most a few at a time. The video
+  // stays preload="none" until the queue pulls it (see posterQueue.ts).
+  useEffect(() => {
+    const v = videoRef.current;
+    if (v && shot.video) loadPoster(v, seekToPoster);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const previewOnEnter = () => {
     const v = videoRef.current;
     if (!v) return;
-    v.muted = true;
-    void v.play().catch(() => {});
+    // Hover = play WITH audio. Browsers block unmuted autoplay until the page
+    // has a user gesture, so fall back to a muted preview if sound is denied.
+    v.muted = false;
+    v.volume = 1;
+    playSingle(v).catch(() => {
+      v.muted = true;
+      void playSingle(v).catch(() => {});
+    });
   };
   const resetOnLeave = () => {
     const v = videoRef.current;
@@ -149,7 +166,7 @@ function Tile({ shot, index }: { shot: Shot; index: number }) {
     if (!v) return;
     v.muted = false;
     v.volume = 1;
-    void v.play().catch(() => {});
+    void playSingle(v).catch(() => {});
   };
 
   // The R2 host sends no CORS headers and `download` is ignored cross-origin,
@@ -176,8 +193,11 @@ function Tile({ shot, index }: { shot: Shot; index: number }) {
           height={shot.h}
           loop
           playsInline
-          preload="metadata"
-          onLoadedMetadata={seekToPoster}
+          // This tile has no poster image — its resting frame is seeked from the
+          // video itself. Loading + seeking is deferred to the posterQueue (see
+          // the loadPoster effect above) so the ~11 tiles don't all fetch
+          // metadata and seek-decode at once when the grid phase appears.
+          preload="none"
           onClick={enableSound}
           style={{ aspectRatio: `${shot.w} / ${shot.h}` }}
           className="h-auto w-full cursor-pointer object-cover"

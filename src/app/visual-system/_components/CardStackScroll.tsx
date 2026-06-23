@@ -1,11 +1,12 @@
 "use client";
 
-import { Children, isValidElement, useRef } from "react";
+import { Children, isValidElement, useRef, useState } from "react";
 import {
   motion,
   cubicBezier,
   useScroll,
   useTransform,
+  useMotionValueEvent,
   useReducedMotion,
   type MotionValue,
 } from "framer-motion";
@@ -18,6 +19,15 @@ const easeFn = cubicBezier(EASE[0], EASE[1], EASE[2], EASE[3]);
 // Scale only (centered) so buried cards keep equal margin top and bottom.
 const SCALE_STEP = 0.04; // 1 → 0.96 → 0.92 …
 
+// Mount a card's content once it's within AHEAD cards of the active one, so the
+// heavy section (videos, collages) is ready before it slides into view. Cards
+// stay mounted once shown — reveals never replay, videos never re-fetch.
+const AHEAD = 2;
+// Only cards near the active index get promoted to their own compositor layer
+// (will-change). Buried/idle cards drop the hint so the GPU isn't holding 21
+// heavy layers at once.
+const PROMOTE_RADIUS = 2;
+
 interface CardStackScrollProps {
   children: React.ReactNode;
 }
@@ -27,6 +37,10 @@ interface CardStackScrollProps {
  * - The base card lifts + scales down as the stack grows.
  * - Each following card slides in from the right and lands on top.
  * All transforms live on wrappers here; section internals are untouched.
+ *
+ * Sections are lazy-mounted by scroll proximity: instead of all ~21 cards (and
+ * their ~110 videos) living in the DOM from first paint, only the active card
+ * and the next few are mounted, which is what keeps the slide smooth.
  */
 export default function CardStackScroll({ children }: CardStackScrollProps) {
   const items = Children.toArray(children).filter(isValidElement);
@@ -37,6 +51,16 @@ export default function CardStackScroll({ children }: CardStackScrollProps) {
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end end"],
+  });
+
+  // Active card index, derived from scroll progress. We only re-render when the
+  // rounded index changes (~21 updates across the whole page), never per frame —
+  // the x/scale transforms below run on the compositor without React renders.
+  const denom = Math.max(total - 1, 1);
+  const [activeIndex, setActiveIndex] = useState(0);
+  useMotionValueEvent(scrollYProgress, "change", (p) => {
+    const next = Math.min(total - 1, Math.max(0, Math.round(p * denom)));
+    setActiveIndex((prev) => (prev === next ? prev : next));
   });
 
   // Reduced motion: render the sections in normal vertical flow, no transforms.
@@ -53,6 +77,7 @@ export default function CardStackScroll({ children }: CardStackScrollProps) {
             index={index}
             total={total}
             progress={scrollYProgress}
+            activeIndex={activeIndex}
           >
             {child}
           </StackCard>
@@ -66,13 +91,40 @@ interface StackCardProps {
   index: number;
   total: number;
   progress: MotionValue<number>;
+  activeIndex: number;
   children: React.ReactNode;
 }
 
-function StackCard({ index, total, progress, children }: StackCardProps) {
+function StackCard({
+  index,
+  total,
+  progress,
+  activeIndex,
+  children,
+}: StackCardProps) {
   const denom = Math.max(total - 1, 1);
   const isBase = index === 0;
   const maxDepth = total - 1 - index; // how many cards eventually land on top
+
+  // One-way latch: mount this card's content once it's within reach of the
+  // active card and keep it mounted forever after. Driven by the activeIndex
+  // prop change (the parent re-render), so the ref read is always fresh.
+  const everMounted = useRef(false);
+  if (index <= activeIndex + AHEAD) everMounted.current = true;
+  const mounted = everMounted.current;
+
+  // Promote to a compositor layer only while near the active card.
+  const promoted = Math.abs(index - activeIndex) <= PROMOTE_RADIUS;
+
+  // Paint only the small window around the active card. Buried cards are
+  // scaled-down + centered, so they sit fully inside the active card's footprint
+  // (occluded at rest, visible only mid-transition) and cards ahead are off to
+  // the right at x:100% — painting any of them is wasted work that, without this,
+  // grows linearly with scroll depth. `content-visibility: hidden` skips their
+  // layout/paint/composite while leaving them mounted, so `once` reveals never
+  // replay and videos never re-fetch. The ±PROMOTE_RADIUS window gives a 2-card
+  // pre-paint margin so the incoming slide never flashes blank.
+  const painted = Math.abs(index - activeIndex) <= PROMOTE_RADIUS;
 
   // Slide in from the right during this card's entrance segment.
   // Base card has no entrance — it's already in place at x: 0.
@@ -93,15 +145,21 @@ function StackCard({ index, total, progress, children }: StackCardProps) {
 
   return (
     <motion.div
-      style={{ x, scale, zIndex: index }}
-      className={[
-        "absolute inset-0 will-change-transform",
-        // Subtle depth: incoming cards cast a soft shadow to the left as they
-        // slide over the card below. Wrapper-only — the card UI is unchanged.
-        // isBase ? "" : "shadow-[-24px_0_48px_-12px_rgba(0,0,0,0.25)]",
-      ].join(" ")}
+      style={{
+        x,
+        scale,
+        zIndex: index,
+        willChange: promoted ? "transform" : "auto",
+        // Skip rendering distant cards entirely (see `painted` above). The
+        // wrapper is `absolute inset-0`, so it keeps its full-screen box even
+        // when hidden; only its subtree is culled. containIntrinsicSize is
+        // ignored while visible and preserves the box once hidden.
+        contentVisibility: painted ? "visible" : "hidden",
+        containIntrinsicSize: "100vw 100vh",
+      }}
+      className="absolute inset-0"
     >
-      {children}
+      {mounted ? children : null}
     </motion.div>
   );
 }

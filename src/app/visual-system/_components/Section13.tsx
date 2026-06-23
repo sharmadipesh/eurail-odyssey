@@ -5,6 +5,7 @@ import Image from "next/image";
 import classNames from "classnames";
 import { motion, type Variants } from "framer-motion";
 import Sections from "./Sections";
+import { playSingle } from "./playSingle";
 import { EASE } from "./reveal";
 
 const THIRTEEN_BASE = "https://pub-15da519210e34e4684d96a0ee4f478a3.r2.dev/section-13";
@@ -87,12 +88,17 @@ function Tile({ n, a, label }: T) {
     if (videoRef.current) videoRef.current.muted = true;
   }, []);
 
-  // Hover = silent preview; click = unmute + play with audio.
   const previewOnEnter = () => {
     const v = videoRef.current;
     if (!v) return;
-    v.muted = true;
-    void v.play().catch(() => {});
+    // Hover = play WITH audio. Browsers block unmuted autoplay until the page
+    // has a user gesture, so fall back to a muted preview if sound is denied.
+    v.muted = false;
+    v.volume = 1;
+    playSingle(v).catch(() => {
+      v.muted = true;
+      void playSingle(v).catch(() => {});
+    });
   };
   const resetOnLeave = () => {
     const v = videoRef.current;
@@ -106,7 +112,7 @@ function Tile({ n, a, label }: T) {
     if (!v) return;
     v.muted = false;
     v.volume = 1;
-    void v.play().catch(() => {});
+    void playSingle(v).catch(() => {});
   };
 
   const fileName = `${n}.mp4`;
@@ -130,7 +136,7 @@ function Tile({ n, a, label }: T) {
           loop
           muted
           playsInline
-          preload="metadata"
+          preload="none"
           onClick={enableSound}
           className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1000ms] ease-out group-hover:scale-[1.08]"
         />
@@ -229,7 +235,7 @@ function Label({ t, w, center }: { t: string; w: number; center?: boolean }) {
 
 export default function Section13() {
   return (
-    <Sections
+    <Sections group="art"
       style={{ container: "px-8!", children: "flex min-h-[90vh] items-center justify-center" }}
     >
       <motion.div

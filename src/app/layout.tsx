@@ -3,8 +3,8 @@ import { inter, robotoMono } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Interrail Odyssey",
-  description: "Interrail Odyssey",
+  title: "Interrail Brand World",
+  description: "Interrail Brand World",
 };
 
 export default function RootLayout({

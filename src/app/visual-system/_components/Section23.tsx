@@ -4,48 +4,31 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, type Variants } from "framer-motion";
 import Sections from "./Sections";
-import { playSingle } from "./playSingle";
 import { EASE } from "./reveal";
 
-const SEVENTEEN_BASE = "https://pub-15da519210e34e4684d96a0ee4f478a3.r2.dev/section-17";
+const TWENTYTHREE_BASE =
+  "https://pub-15da519210e34e4684d96a0ee4f478a3.r2.dev/section-23";
 // Tiles backed by an .mp4; the rest stay .png stills.
-const VIDEO_IDS = new Set([1, 3, 5, 6, 8, 10, 12, 15, 16]);
+const VIDEO_IDS = new Set([3, 4, 7]);
 
-/* Two justified rows of short films. Every tile carries a play badge.
- * `ratio` (from the source asset) drives both the flex weight and the box
- * aspect, so each row fills the width at a uniform height without cropping. */
-type Clip = { n: number; ratio: number };
-
-const ROW_ONE: Clip[] = [
-  { n: 1, ratio: 216 / 384 },
-  { n: 2, ratio: 308 / 384 },
-  { n: 3, ratio: 288 / 384 },
-  { n: 4, ratio: 288 / 384 },
-  { n: 5, ratio: 288 / 384 },
-  { n: 6, ratio: 288 / 384 },
-  { n: 7, ratio: 254 / 384 },
-  { n: 8, ratio: 512 / 384 },
+// `ar` = true source aspect ratio (w/h) so each tile shows uncropped.
+// Columns mirror the reference board: a staggered, six-column collage with
+// the two tall clips anchoring the centre and the wide clip lower-left.
+type TileDef = { n: number; ar: number };
+const COLUMNS: { flex: number; tiles: TileDef[] }[] = [
+  { flex: 2.5, tiles: [{ n: 1, ar: 374 / 468 }, { n: 7, ar: 496 / 372 }] },
+  { flex: 2.4, tiles: [{ n: 2, ar: 424 / 530 }, { n: 5, ar: 406 / 540 }] },
+  { flex: 2.8, tiles: [{ n: 3, ar: 454 / 808 }] },
+  { flex: 2.9, tiles: [{ n: 4, ar: 454 / 808 }] },
+  { flex: 2.2, tiles: [{ n: 8, ar: 326 / 326 }, { n: 6, ar: 360 / 540 }] },
+  { flex: 2.0, tiles: [{ n: 9, ar: 342 / 514 }, { n: 10, ar: 400 / 310 }] },
 ];
-const ROW_TWO: Clip[] = [
-  { n: 9, ratio: 284 / 378 },
-  { n: 10, ratio: 506 / 378 },
-  { n: 11, ratio: 302 / 378 },
-  { n: 12, ratio: 282 / 378 },
-  { n: 13, ratio: 284 / 378 },
-  { n: 14, ratio: 302 / 378 },
-  { n: 15, ratio: 212 / 378 },
-  { n: 16, ratio: 284 / 378 },
-];
-
-/* Flex-basis seed; nudges wrapping on narrow screens while the proportional
- * grow keeps natural aspect ratios on a single justified row. */
-const BASIS = 110;
 
 const container: Variants = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.06, delayChildren: 0.04 } },
+  show: { transition: { staggerChildren: 0.05, delayChildren: 0.04 } },
 };
-const row: Variants = {
+const group: Variants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.06 } },
 };
@@ -58,26 +41,21 @@ const item: Variants = {
   },
 };
 
-function Clip({ clip }: { clip: Clip }) {
+function Tile({ n, ar }: TileDef) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const isVideo = VIDEO_IDS.has(clip.n);
+  const isVideo = VIDEO_IDS.has(n);
 
   // Pin muted via the ref so the hover preview can autoplay (autoplay policy).
   useEffect(() => {
     if (videoRef.current) videoRef.current.muted = true;
   }, []);
 
+  // Hover = silent preview; click = unmute + play with audio.
   const previewOnEnter = () => {
     const v = videoRef.current;
     if (!v) return;
-    // Hover = play WITH audio. Browsers block unmuted autoplay until the page
-    // has a user gesture, so fall back to a muted preview if sound is denied.
-    v.muted = false;
-    v.volume = 1;
-    playSingle(v).catch(() => {
-      v.muted = true;
-      void playSingle(v).catch(() => {});
-    });
+    v.muted = true;
+    void v.play().catch(() => {});
   };
   const resetOnLeave = () => {
     const v = videoRef.current;
@@ -91,42 +69,47 @@ function Clip({ clip }: { clip: Clip }) {
     if (!v) return;
     v.muted = false;
     v.volume = 1;
-    void playSingle(v).catch(() => {});
+    void v.play().catch(() => {});
   };
 
-  const fileName = `${clip.n}.mp4`;
-  const downloadHref = `/api/moodboard-download?dir=section-17&file=${fileName}`;
+  const fileName = `${n}.mp4`;
+  const downloadHref = `/api/moodboard-download?dir=section-23&file=${fileName}`;
 
   return (
     <motion.div
       variants={item}
+      whileHover={{ scale: 1.02, zIndex: 10 }}
+      transition={{ type: "spring", stiffness: 280, damping: 26 }}
       onMouseEnter={isVideo ? previewOnEnter : undefined}
       onMouseLeave={isVideo ? resetOnLeave : undefined}
-      className="group relative cursor-pointer overflow-hidden rounded-[8px] ring-1 ring-[#1B2040]/[0.06]"
-      style={{ flexGrow: clip.ratio, flexBasis: clip.ratio * BASIS, aspectRatio: clip.ratio }}
+      style={{ aspectRatio: ar }}
+      className="group relative w-full cursor-pointer overflow-hidden rounded-[8px] ring-1 ring-[#1B2040]/[0.06] shadow-[0_1px_3px_rgba(0,0,0,0.06)] transition-[filter,box-shadow] duration-500 hover:shadow-[0_18px_44px_-16px_rgba(0,0,0,0.5)] group-hover/collage:brightness-[0.6] group-hover/collage:grayscale-[0.2] hover:!brightness-100 hover:!grayscale-0"
     >
       {isVideo ? (
         <video
           ref={videoRef}
-          src={`${SEVENTEEN_BASE}/${clip.n}.mp4`}
-          poster={`${SEVENTEEN_BASE}/${clip.n}.png`}
+          src={`${TWENTYTHREE_BASE}/${n}.mp4`}
+          poster={`${TWENTYTHREE_BASE}/${n}.png`}
           loop
           muted
           playsInline
-          preload="none"
+          preload="metadata"
           onClick={enableSound}
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-[800ms] ease-out group-hover:scale-[1.06]"
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1000ms] ease-out group-hover:scale-[1.06]"
         />
       ) : (
         <Image
-          src={`${SEVENTEEN_BASE}/${clip.n}.png`}
+          src={`${TWENTYTHREE_BASE}/${n}.png`}
           alt=""
           fill
-          sizes="(max-width: 640px) 45vw, (max-width: 1024px) 25vw, 12vw"
-          className="object-cover transition-transform duration-[800ms] ease-out group-hover:scale-[1.06]"
+          sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 16vw"
+          className="object-cover transition-transform duration-[1000ms] ease-out group-hover:scale-[1.06]"
         />
       )}
-      <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/10" />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-black/5"
+      />
 
       {/* download button — video tiles only, fades in on hover (matches moodboard) */}
       {isVideo && (
@@ -174,22 +157,12 @@ function Clip({ clip }: { clip: Clip }) {
   );
 }
 
-function Row({ clips }: { clips: Clip[] }) {
-  return (
-    <motion.div variants={row} className="flex flex-wrap justify-center gap-2.5 lg:flex-nowrap">
-      {clips.map((c) => (
-        <Clip key={c.n} clip={c} />
-      ))}
-    </motion.div>
-  );
-}
-
-export default function Section17() {
+export default function Section23() {
   return (
     <Sections group="art"
       style={{
         container: "px-8!",
-        children: "flex min-h-[90vh] items-center",
+        children: "flex min-h-[90vh] items-center justify-center",
       }}
     >
       <motion.div
@@ -197,10 +170,20 @@ export default function Section17() {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, amount: 0.15 }}
-        className="mx-auto flex w-full max-w-[1720px] flex-col gap-2.5"
+        className="group/collage mx-auto flex w-full max-w-[1680px] flex-wrap items-start justify-center gap-3 lg:flex-nowrap"
       >
-        <Row clips={ROW_ONE} />
-        <Row clips={ROW_TWO} />
+        {COLUMNS.map((col, ci) => (
+          <motion.div
+            key={ci}
+            variants={group}
+            className="flex min-w-[120px] flex-col gap-3"
+            style={{ flexGrow: col.flex, flexBasis: col.flex * 60 }}
+          >
+            {col.tiles.map((t) => (
+              <Tile key={t.n} {...t} />
+            ))}
+          </motion.div>
+        ))}
       </motion.div>
     </Sections>
   );
