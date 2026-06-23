@@ -1,8 +1,9 @@
 "use client";
 
-import Image from "next/image";
+import { useEffect, useRef } from "react";
 import { motion, type Variants } from "framer-motion";
 import Sections from "./Sections";
+import { playSingle } from "./playSingle";
 import { EASE } from "./reveal";
 
 type Block = {
@@ -55,6 +56,7 @@ const AVOID: Block = {
 };
 
 const VIDEOS = ["1", "2", "3"];
+const WINDOW_BASE = "https://pub-15da519210e34e4684d96a0ee4f478a3.r2.dev/window";
 
 const container: Variants = {
   hidden: {},
@@ -122,41 +124,118 @@ function Card({ block }: { block: Block }) {
   );
 }
 
-function VideoThumb({ src }: { src: string }) {
+function VideoThumb({ poster, src }: { poster: string; src: string }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Pin muted via the ref (React doesn't reliably set the property) so the
+  // hover preview can autoplay under the browser's autoplay policy.
+  useEffect(() => {
+    if (videoRef.current) videoRef.current.muted = true;
+  }, []);
+
+  const previewOnEnter = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    // Hover = play WITH audio. Browsers block unmuted autoplay until the page
+    // has a user gesture, so fall back to a muted preview if sound is denied.
+    v.muted = false;
+    v.volume = 1;
+    playSingle(v).catch(() => {
+      v.muted = true;
+      void playSingle(v).catch(() => {});
+    });
+  };
+  const resetOnLeave = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.pause();
+    v.currentTime = 0;
+    v.muted = true;
+  };
+  // A click is a real user gesture → unmute and play with audio.
+  const enableSound = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = false;
+    v.volume = 1;
+    void playSingle(v).catch(() => {});
+  };
+
+  // Same-origin proxy download (R2 sends no CORS headers). Derive folder + file
+  // from the URL so it stays consistent with the moodboard tiles.
+  const parts = src.split("/");
+  const fileName = parts.pop() || "video.mp4";
+  const dir = parts.pop() || "window";
+  const downloadHref = `/api/moodboard-download?dir=${encodeURIComponent(dir)}&file=${encodeURIComponent(fileName)}`;
+
   return (
     <motion.div
       variants={item}
-      className="group relative aspect-[16/9] w-full cursor-pointer overflow-hidden rounded-xl ring-1 ring-[#1B2040]/[0.06] lg:aspect-auto lg:min-h-0 lg:flex-1"
+      // Pure upward lift (no scale) + layered downward shadow — identical to
+      // the moodboard tiles so the hover feels consistent across sections.
+      whileHover={{ y: -24 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      onMouseEnter={previewOnEnter}
+      onMouseLeave={resetOnLeave}
+      className="group relative aspect-[16/9] w-full cursor-pointer overflow-hidden rounded-xl ring-1 ring-[#1B2040]/[0.06] shadow-sm transition-[box-shadow,filter] duration-[550ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:z-10 hover:shadow-[0_30px_55px_-12px_rgba(20,24,48,0.55),0_14px_26px_-10px_rgba(20,24,48,0.4)] group-hover/vids:brightness-[0.58] group-hover/vids:grayscale-[0.4] hover:!brightness-100 hover:!grayscale-0 lg:aspect-auto lg:min-h-0 lg:flex-1"
     >
-      <Image
+      <video
+        ref={videoRef}
         src={src}
-        alt=""
-        fill
-        sizes="(max-width: 1024px) 90vw, 290px"
-        className="object-cover transition-transform duration-[800ms] ease-out group-hover:scale-[1.06]"
+        poster={poster}
+        loop
+        muted
+        playsInline
+        preload="none"
+        onClick={enableSound}
+        className="absolute inset-0 h-full w-full object-cover"
       />
-      <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/10" />
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span className="flex h-11 w-11 items-center justify-center rounded-full bg-black/25 ring-1 ring-white/35 backdrop-blur-[2px] transition-all duration-500 group-hover:scale-110 group-hover:bg-black/40">
+
+      {/* download button — fades in on hover, pops on its own hover (matches moodboard) */}
+      <motion.a
+        href={downloadHref}
+        download={fileName}
+        onClick={(e) => e.stopPropagation()}
+        aria-label="Download video"
+        initial={false}
+        whileHover={{ scale: 1.28 }}
+        whileTap={{ scale: 0.88 }}
+        transition={{ type: "spring", stiffness: 420, damping: 18, mass: 0.7 }}
+        className="absolute right-2 top-2 z-20 flex h-7 w-7 items-center justify-center rounded-full bg-black/55 text-white opacity-0 shadow-[0_6px_18px_-4px_rgba(0,0,0,0.55)] ring-1 ring-white/25 backdrop-blur-md transition-[opacity,background-color] duration-300 ease-out hover:bg-black/90 group-hover:opacity-100"
+      >
+        <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" aria-hidden>
+          <path
+            d="M8 2.5v7m0 0 2.75-2.75M8 9.5 5.25 6.75M3 12.5h10"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </motion.a>
+
+      {/* play badge — identical to the moodboard: visible at rest, recedes on hover */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center opacity-100 transition-opacity duration-300 ease-out group-hover:opacity-0"
+      >
+        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-black/25 shadow-[0_8px_28px_-6px_rgba(0,0,0,0.6)] ring-1 ring-inset ring-white/45 backdrop-blur-md transition-transform duration-[550ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-90">
           <svg
-            width="13"
-            height="15"
-            viewBox="0 0 15 17"
-            fill="none"
-            className="ml-[2px]"
+            viewBox="0 0 24 24"
+            className="h-[18px] w-[18px] translate-x-[1.5px] fill-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]"
             aria-hidden
           >
-            <path d="M0 0L15 8.5L0 17V0Z" fill="white" fillOpacity="0.95" />
+            <path d="M8 5v14l11-7z" />
           </svg>
         </span>
-      </div>
+      </span>
     </motion.div>
   );
 }
 
 export default function SectionSix() {
   return (
-    <Sections
+    <Sections group="art"
       style={{
         container: "px-8!",
         children: "flex min-h-[90vh] items-center",
@@ -172,10 +251,14 @@ export default function SectionSix() {
         {/* Left — stacked video thumbnails (fill the card section's height) */}
         <motion.div
           variants={group}
-          className="flex flex-col gap-[14px] lg:h-full"
+          className="group/vids flex flex-col gap-[14px] lg:h-full"
         >
           {VIDEOS.map((n) => (
-            <VideoThumb key={n} src={`/images/video/window/${n}.png`} />
+            <VideoThumb
+              key={n}
+              poster={`${WINDOW_BASE}/${n}.png`}
+              src={`${WINDOW_BASE}/${n}.mp4`}
+            />
           ))}
         </motion.div>
 

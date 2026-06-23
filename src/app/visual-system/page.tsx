@@ -2,6 +2,7 @@
 import React from "react";
 
 import Banner from "./_components/Banner";
+import Index from "./_components/Index";
 import SectionOne from "./_components/SectionOne";
 import SectionTwo from "./_components/SectionTwo";
 import SectionThree from "./_components/SectionThree";
@@ -23,13 +24,22 @@ import Section18 from "./_components/Section18";
 import Section19 from "./_components/Section19";
 import Section20 from "./_components/Section20";
 import Section21 from "./_components/Section21";
+import Section22 from "./_components/Section22";
+import Section23 from "./_components/Section23";
+import Section24 from "./_components/Section24";
+import Section25 from "./_components/Section25";
 import CardStackScroll from "./_components/CardStackScroll";
+
+import GraphicHeading from "./_components/GraphicHeading";
+import Graphic1 from "./_components/Graphic1";
+import Graphic2 from "./_components/Graphic2";
 
 export default function VisualSystemPage() {
   return (
     <>
       <Banner />
       <CardStackScroll>
+        <Index />
         <SectionOne />
         <SectionTwo />
         <SectionThree />
@@ -51,6 +61,13 @@ export default function VisualSystemPage() {
         <Section19 />
         <Section20 />
         <Section21 />
+        <Section22 />
+        <Section23 />
+        <Section24 />
+        <Section25 />
+        <GraphicHeading />
+        <Graphic1 />
+        <Graphic2 />
       </CardStackScroll>
     </>
   );

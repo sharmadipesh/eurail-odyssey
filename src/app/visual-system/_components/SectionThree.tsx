@@ -23,13 +23,13 @@ const CONTENT: { left: Item[]; right: Item[] } = {
       id: "01",
       title: "The Trip",
       undeline: "3.1.svg",
-      desc: "Every travel brand sells the destination. Interrail sells the going. The Trip is the foundational basket — the journey itself, treated as the product, not the consolation prize. The carriage as a moving room. The window as our most ownable canvas. The platform at 6 a.m. The hours between places are not dead time; they are the time. This is where the brand's most distinctive imagery lives — and where it argues you don't have to skip the in-between to deserve the trip.",
+      desc: "The journey is central to the Interrail experience. The visual system should capture movement, transition and the moments between destinations. Focus on travel as an experience in itself, rather than a means to an end. Imagery should prioritise the train journey, changing landscapes, station moments and the feeling of being in motion.",
     },
     {
       id: "02",
       title: "Discovery",
       undeline: "3.2.svg",
-      desc: "Discovery is what travel reveals when you slow down enough to notice. Not the landmark you've seen on twenty feeds — the lemon seller, the bar the local actually drinks in, the search query you bothered to challenge. Most travel content presents Europe as a checklist. Interrail presents it as a question. The Discovery basket holds the brand's authority: it knows the small-town café and the local layer of the famous city. Algorithms rank monuments. Only people rank what you'd have missed.",
+      desc: "Discovery is about exploration beyond the expected. Visuals should feel observational rather than touristic. We will prioritise authenticity over landmarks and moments of curiosity over moments of arrival. The emphasis should be on finding, wandering and uncovering.",
     },
   ],
   right: [
@@ -37,19 +37,19 @@ const CONTENT: { left: Item[]; right: Item[] } = {
       id: "03",
       title: "Transformation",
       undeline: "3.3.svg",
-      desc: "Transformation is the inner shift. The why beneath every other basket. The mission is literal: spark personal transformation through meaningful travel. The basket holds the voices — the 90-year-old, the letter from a past self, the friend who came back different. The Trip is the movement. Discovery is the seeing. Transformation is the becoming.",
+      desc: "Travel has the ability to shift perspective. This territory focuses on personal growth, confidence and independence developed through experience. Visuals should capture reflection, self-discovery and moments that suggest change rather than explicitly showing it. Also, the transformation happens after you go back from your trip.",
     },
     {
       id: "04",
       title: "Community",
       undeline: "3.4.svg",
-      desc: "Community is the cohort. The patch on the worn backpack, the Class of 2026 certificate, the voice note about a 4 a.m. arrival in Trieste. Where every other travel brand sells loyalty programs, Interrail offers something earned. The basket holds the symbols of membership — the trinkets, the rite of passage, the realisation that the journey you're taking has been taken by every generation since 1959. Horizontal across countries, vertical across decades. The certificate isn't marketing. It's the proof you became one of us.",
+      desc: "Interrail connects generations of travellers through shared experiences. Visuals should celebrate connection, companionship and collective exploration while maintaining a sense of individuality. Focus on genuine interactions, shared moments and the social dimension of travel.",
     },
     {
       id: "05",
       title: "Heritage",
       undeline: "3.5.svg",
-      desc: "Heritage is the radical idea. 1959, nations recently at war letting their youth cross borders to find each other. Interrail wasn't founded as a product — it was founded as a small act of post-war hope. Most heritage in travel is decoration. Ours is structural. The idea was never about trains. It was about what trains could do.",
+      desc: "Interrail has been part of European travel culture since 1972. This territory draws on the brand's history and enduring relevance. Visuals should balance legacy with modernity, archival materials, pictures and stories turning into stories users can read. Showing how the original idea continues to with new generations of travellers and the brand.",
     },
   ],
 };

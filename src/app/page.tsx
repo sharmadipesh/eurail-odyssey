@@ -684,6 +684,20 @@ function RailNetwork() {
   );
 }
 
+const HEADING_LINES = ["Interrail", "Brand World"];
+
+const headingContainer: Variants = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: 0.12, delayChildren: 0.55 },
+  },
+};
+
+const lineReveal: Variants = {
+  hidden: { y: "115%" },
+  show: { y: "0%", transition: { duration: 0.95, ease: EASE } },
+};
+
 const heroContainer: Variants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.12, delayChildren: 0.25 } },
@@ -736,32 +750,77 @@ export default function Home() {
       <motion.div
         aria-hidden
         className="pointer-events-none absolute -left-[14vw] -top-[16vh] -z-10 h-[64vh] w-[64vh] rounded-full bg-[#FFC94A] blur-[150px]"
-        animate={{ x: [0, 38, 0], y: [0, 26, 0], scale: [1, 1.12, 1], opacity: [0.26, 0.4, 0.26] }}
+        animate={{
+          x: [0, 38, 0],
+          y: [0, 26, 0],
+          scale: [1, 1.12, 1],
+          opacity: [0.26, 0.4, 0.26],
+        }}
         transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
         aria-hidden
         className="pointer-events-none absolute -bottom-[22vh] -right-[12vw] -z-10 h-[60vh] w-[60vh] rounded-full bg-[#F0A21E] blur-[160px]"
-        animate={{ x: [0, -32, 0], y: [0, -24, 0], scale: [1, 1.14, 1], opacity: [0.18, 0.3, 0.18] }}
-        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+        animate={{
+          x: [0, -32, 0],
+          y: [0, -24, 0],
+          scale: [1, 1.14, 1],
+          opacity: [0.18, 0.3, 0.18],
+        }}
+        transition={{
+          duration: 22,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 1.5,
+        }}
       />
       <motion.div
         aria-hidden
         className="pointer-events-none absolute right-[4vw] top-[22vh] -z-10 h-[46vh] w-[46vh] rounded-full bg-[#9AA6FF] blur-[150px]"
-        animate={{ x: [0, -24, 0], y: [0, 22, 0], scale: [1, 1.16, 1], opacity: [0.16, 0.3, 0.16] }}
-        transition={{ duration: 16, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
+        animate={{
+          x: [0, -24, 0],
+          y: [0, 22, 0],
+          scale: [1, 1.16, 1],
+          opacity: [0.16, 0.3, 0.16],
+        }}
+        transition={{
+          duration: 16,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 0.8,
+        }}
       />
       <motion.div
         aria-hidden
         className="pointer-events-none absolute -left-[4vw] bottom-[2vh] -z-10 h-[42vh] w-[42vh] rounded-full bg-[#FF9E7D] blur-[150px]"
-        animate={{ x: [0, 26, 0], y: [0, -20, 0], scale: [1, 1.12, 1], opacity: [0.1, 0.2, 0.1] }}
-        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 2.2 }}
+        animate={{
+          x: [0, 26, 0],
+          y: [0, -20, 0],
+          scale: [1, 1.12, 1],
+          opacity: [0.1, 0.2, 0.1],
+        }}
+        transition={{
+          duration: 20,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 2.2,
+        }}
       />
       <motion.div
         aria-hidden
         className="pointer-events-none absolute left-[28vw] -top-[6vh] -z-10 h-[40vh] w-[40vh] rounded-full bg-[#C7AAFF] blur-[150px]"
-        animate={{ x: [0, 20, 0], y: [0, 18, 0], scale: [1, 1.1, 1], opacity: [0.1, 0.22, 0.1] }}
-        transition={{ duration: 19, repeat: Infinity, ease: "easeInOut", delay: 1.1 }}
+        animate={{
+          x: [0, 20, 0],
+          y: [0, 18, 0],
+          scale: [1, 1.1, 1],
+          opacity: [0.1, 0.22, 0.1],
+        }}
+        transition={{
+          duration: 19,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 1.1,
+        }}
       />
 
       {/* fine grain — kills banding, adds a premium matte finish */}
@@ -802,18 +861,33 @@ export default function Home() {
         </motion.span>
 
         <motion.h1
-          variants={heroItem}
-          className="bg-gradient-to-br from-ink to-indigo-bright bg-clip-text pb-[0.12em] font-sans text-[clamp(42px,7.2vw,92px)] font-semibold leading-[1.05] tracking-[-0.035em] text-transparent"
+          variants={headingContainer}
+          initial="hidden"
+          animate="show"
+          className="font-sans text-[clamp(42px,7.24vw,92px)] font-extrabold leading-[0.9] tracking-[-0.04em] text-ink"
         >
-          Interrail Odyssey
+          {HEADING_LINES.map((line) => (
+            <span
+              key={line}
+              className="block overflow-hidden pb-[0.05em]"
+            >
+              <motion.span variants={lineReveal} className="block">
+                {line}
+              </motion.span>
+            </span>
+          ))}
         </motion.h1>
 
         <motion.p
           variants={heroItem}
           className="mt-6 max-w-xl font-sans text-lg font-normal leading-relaxed text-ink/55"
         >
-          Sixteen territories. One unmistakable feeling. A living system of
-          visual &amp; video pillars. consistency without sameness.
+          Travel is not one story
+          <br />
+          it&apos;s thousands of journeys
+          <br />
+          This visual system translates that complexity into 11 creative
+          territories that work together as one brand.
         </motion.p>
 
         <motion.div variants={heroItem} className="pointer-events-auto mt-10">
