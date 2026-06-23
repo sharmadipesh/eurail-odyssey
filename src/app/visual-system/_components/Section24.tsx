@@ -15,8 +15,8 @@ type Block = {
   bullets?: string[];
 };
 
-const ENCOUNTER: Block = {
-  heading: ["THE ENCOUNTER"],
+const ORIGIN: Block = {
+  heading: ["THE ORIGIN"],
   desc: "Archive footage and material. Vintage carriages still in service. The original 1972 pass. The same window framed in 1975 and 2026. Imagery that uses decades as a creative resource. Proving the feeling hasn't changed even when everything else has. And the heritage of the brand.",
 };
 const IN_FRAME: Block = {
@@ -156,7 +156,7 @@ export default function Section24() {
           className="grid gap-[14px] sm:grid-cols-[repeat(2,minmax(0,360px))] sm:items-stretch"
         >
           <motion.div variants={group} className="flex flex-col gap-[14px] lg:[&>*:last-child]:flex-1">
-            <Card block={ENCOUNTER} />
+            <Card block={ORIGIN} />
             <Card block={IN_FRAME} />
           </motion.div>
           <motion.div variants={group} className="flex flex-col gap-[14px] lg:[&>*:last-child]:flex-1">
