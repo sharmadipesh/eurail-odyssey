@@ -1,6 +1,6 @@
 "use client";
 
-import { Children, isValidElement, useRef, useState } from "react";
+import { Children, isValidElement, useMemo, useRef, useState } from "react";
 import {
   motion,
   cubicBezier,
@@ -43,7 +43,15 @@ interface CardStackScrollProps {
  * and the next few are mounted, which is what keeps the slide smooth.
  */
 export default function CardStackScroll({ children }: CardStackScrollProps) {
-  const items = Children.toArray(children).filter(isValidElement);
+  // Stabilize the child element references across this component's own
+  // re-renders (activeIndex changes on every card boundary). With stable refs,
+  // React's same-element bail-out skips re-rendering each unchanged section's
+  // subtree when StackCard re-renders — only the cheap StackCard wrapper re-runs.
+  // `children` is created once in page.tsx, so it's referentially stable.
+  const items = useMemo(
+    () => Children.toArray(children).filter(isValidElement),
+    [children],
+  );
   const total = items.length;
 
   const reduceMotion = useReducedMotion();

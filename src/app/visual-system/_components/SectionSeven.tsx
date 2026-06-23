@@ -124,7 +124,7 @@ function Tile({
           whileHover={{ scale: 1.28 }}
           whileTap={{ scale: 0.88 }}
           transition={{ type: "spring", stiffness: 420, damping: 18, mass: 0.7 }}
-          className="absolute right-2 top-2 z-20 flex h-7 w-7 items-center justify-center rounded-full bg-black/55 text-white opacity-0 shadow-[0_6px_18px_-4px_rgba(0,0,0,0.55)] ring-1 ring-white/25 backdrop-blur-md transition-[opacity,background-color] duration-300 ease-out hover:bg-black/90 group-hover:opacity-100"
+          className="absolute right-2 top-2 z-20 flex h-7 w-7 items-center justify-center rounded-full bg-black/55 text-white opacity-0 shadow-[0_6px_18px_-4px_rgba(0,0,0,0.55)] ring-1 ring-white/25 group-hover:backdrop-blur-md transition-[opacity,background-color] duration-300 ease-out hover:bg-black/90 group-hover:opacity-100"
         >
           <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" aria-hidden>
             <path

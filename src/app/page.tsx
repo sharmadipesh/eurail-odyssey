@@ -867,10 +867,7 @@ export default function Home() {
           className="font-sans text-[clamp(42px,7.24vw,92px)] font-extrabold leading-[0.9] tracking-[-0.04em] text-ink"
         >
           {HEADING_LINES.map((line) => (
-            <span
-              key={line}
-              className="block overflow-hidden pb-[0.05em]"
-            >
+            <span key={line} className="block overflow-hidden pb-[0.05em]">
               <motion.span variants={lineReveal} className="block">
                 {line}
               </motion.span>
@@ -882,11 +879,12 @@ export default function Home() {
           variants={heroItem}
           className="mt-6 max-w-xl font-sans text-lg font-normal leading-relaxed text-ink/55"
         >
-          Travel is not one story
+          Travel is not one story.
           <br />
-          it&apos;s thousands of journeys
+          It&apos;s thousands of journeys.
           <br />
-          This visual system translates that complexity into 11 creative
+          This visual system translates that complexity into{" "}
+          <strong>11 creative</strong>
           territories that work together as one brand.
         </motion.p>
 
